@@ -1,3 +1,4 @@
+require 'bf/engine'
 require "active_record"
 require "mysql2"
 require "bf/version"
