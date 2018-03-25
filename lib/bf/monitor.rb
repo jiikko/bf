@@ -21,13 +21,14 @@ module BF
       state
     end
 
+    # for cli
     def current_ranges
       chart = ->(x){
         case x
         when 1
-          '下'
-        when -1
           '上'
+        when -1
+          '下'
         when 0
           '='
         end
@@ -52,7 +53,7 @@ module BF
           [ "#{n}m: #{struct.to_s}",
           ]
         }.join(' '),
-        pairs.map { |x, y| chart.call(x.diff <=> y.diff) },
+        pairs.map { |x, y| chart.call(x.max <=> y.max) },
       ].join(' ')
     end
 
