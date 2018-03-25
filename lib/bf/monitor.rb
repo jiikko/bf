@@ -13,7 +13,7 @@ module BF
     end
 
     def current_ranges
-      ltp
+      [BF::Trade.minutely_range]
     end
 
     private
