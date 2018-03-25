@@ -1,20 +1,5 @@
-# BfTools
+# BF
 ## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'bf_tools'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install bf_tools
-
 ## Usage
 TODO
 

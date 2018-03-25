@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe BfTools::Monitor do
+RSpec.describe BF::Monitor do
   describe 'ranges' do
     it do
     end

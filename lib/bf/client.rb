@@ -1,7 +1,7 @@
 require 'net/https'
 require 'json'
 
-module BfTools
+module BF
   # https://lightning.bitflyer.jp/docs?lang=ja#http-public-api
   class Client
     class << self

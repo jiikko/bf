@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "bf_tools"
+require "bf"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

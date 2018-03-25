@@ -1,11 +1,11 @@
-module BfTools
+module BF
   class Monitor
     def current_ranges
       [1..2, 1..3, 2..5]
     end
 
     def current_status
-      state = BfTools::Client.get_state
+      state = BF::Client.get_state
       state.each do |key, value|
         state[key] = state_const[key][value]
       end
