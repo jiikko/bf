@@ -10,14 +10,14 @@ RSpec.describe BF::Trade do
   end
 
   describe '.minutely_range' do
-    it do
+    it 'だいたい上位とだいたい下位を返す' do
       BF::Trade.delete_all
       BF::Trade.create!(price: 1200, kind: :minutely, created_at: 2.minute.ago)
       BF::Trade.create!(price: 1100, kind: :hourly)
-      BF::Trade.create!(price: 1000, kind: :minutely)
-      BF::Trade.create!(price: 300, kind: :minutely)
-      BF::Trade.create!(price: 500, kind: :minutely)
-      expect(BF::Trade.minutely_range).to eq([1000, 300])
+      [50, 90, 60, 60, 40, 100, 40, 40, 50, 70].each do |x|
+        BF::Trade.create!(price: x, kind: :minutely)
+      end
+      expect(BF::Trade.minutely_range).to eq([70, 40])
     end
   end
 end
