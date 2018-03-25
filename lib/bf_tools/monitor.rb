@@ -1,6 +1,6 @@
 module BfTools
   class Monitor
-    def ranges
+    def current_ranges
       [1..2, 1..3, 2..5]
     end
 
@@ -10,6 +10,10 @@ module BfTools
         state[key] = state_const[key][value]
       end
       state
+    end
+
+    def current_ranges
+      ltp
     end
 
     private
