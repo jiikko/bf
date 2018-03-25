@@ -18,4 +18,4 @@ ActiveRecord::Base.establish_connection(
   adapter:   'sqlite3',
   database:  ':memory:'
 )
-ActiveRecord::Migrator.migrate(File.expand_path('../migrations', __FILE__))
+ActiveRecord::Migrator.migrate(File.expand_path('../../db/migrate', __FILE__))

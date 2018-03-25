@@ -19,7 +19,7 @@ module BF
       ActiveRecord::Base.configurations = YAML.load_file(database_yml)
       ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), '../../debug.log'))
       ActiveRecord::Base.establish_connection(:mysql)
-      ActiveRecord::Migrator.migrate(File.expand_path('../../../spec/migrations', __FILE__))
+      ActiveRecord::Migrator.migrate(File.expand_path('../../db/migrate', __FILE__))
     end
   end
 end
