@@ -37,6 +37,10 @@ module BF
       calculate_range(RANGE_CONST[:half_hourly].ago)
     end
 
+    def self.hourly_range
+      calculate_range(RANGE_CONST[:hourly].ago)
+    end
+
     private
 
     def self.calculate_range(from)

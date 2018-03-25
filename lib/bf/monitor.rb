@@ -25,9 +25,9 @@ module BF
       chart = ->(x){
         case x
         when 1
-          '上'
-        when -1
           '下'
+        when -1
+          '上'
         when 0
           '='
         end
@@ -37,6 +37,7 @@ module BF
         5  => BF::Trade.five_minutely_range,
         10 => BF::Trade.ten_minutely_range,
         30 => BF::Trade.half_hourly_range,
+        60 => BF::Trade.hourly_range,
       }
       table = table.map { |n, range|
         { n => RangeStruct.new(*range) }
