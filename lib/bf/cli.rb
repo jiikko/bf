@@ -8,9 +8,9 @@ module BF
 
     def start
       loop do
-        BF::Monitor.new.current_ranges
+        puts BF::Monitor.new.current_ranges
         BF::Trade.fetch_with_clean
-        sleep(3)
+        sleep(2)
       end
     end
 
