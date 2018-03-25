@@ -17,7 +17,7 @@ RSpec.describe BF::Trade do
       [50, 90, 60, 60, 40, 100, 40, 40, 50, 70].each do |x|
         BF::Trade.create!(price: x, kind: :minutely)
       end
-      expect(BF::Trade.minutely_range).to eq([70, 40])
+      expect(BF::Trade.minutely_range).to eq([40, 70])
     end
   end
 end

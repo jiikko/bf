@@ -15,11 +15,26 @@ module BF
       create!(kind: :minutely, price: BF::Client.get_ticker['ltp'])
     end
 
+    def self.fetch_with_clean
+      fetch
+      where(kind: :minutely).where('created_at < ?', 1.hour.ago).delete_all
+    end
+
+    def self.five_minutely_range
+    end
+
     def self.minutely_range
       from = RANGE_CONST[:minutely].ago
       to = Time.now
-      deviation_value_table = {}
       prices = where(kind: :minutely, created_at: (from..to)).pluck(:price)
+      calculate_range(prices)
+    end
+
+    private
+
+    def self.calculate_range(prices)
+      deviation_value_table = {}
+      return [0, 0] if prices.empty?
       mean = prices.sum / prices.size
       deviations = prices.map { |x| x - mean }
       variance = deviations.map { |d| d * d }.sum / prices.size
@@ -33,7 +48,7 @@ module BF
           true if deviation_value < 60 && deviation_value > 30
         end
       result_prices = deviation_value_table.map { |deviation_value, price| price }
-      [result_prices.max, result_prices.min]
+      [result_prices.max, result_prices.min].sort
     end
   end
 end
