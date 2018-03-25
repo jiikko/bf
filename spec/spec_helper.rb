@@ -12,3 +12,9 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+ActiveRecord::Base.establish_connection(
+  adapter:   'sqlite3',
+  database:  ':memory:'
+)
+ActiveRecord::Migrator.migrate(File.expand_path('../migrations', __FILE__))
