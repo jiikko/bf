@@ -1,2 +1,4 @@
-class Trade < ActiveRecord::Base
+module BF
+  class Trade < ::ActiveRecord::Base
+  end
 end
