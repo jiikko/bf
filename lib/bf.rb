@@ -5,6 +5,7 @@ require "bf/version"
 require "bf/monitor"
 require "bf/client"
 require "bf/trade"
+require "bf/fetcher"
 require "bf/cli"
 
 module BF
