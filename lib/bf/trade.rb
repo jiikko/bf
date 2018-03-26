@@ -13,7 +13,8 @@ module BF
   end
 
   module TradeClassDecorator
-    def price_directions
+    def price_directions(price_table = nil)
+      price_table ||= BF::Trade.price_table
       to_difflized_char = ->(x){
         case x
         when 1
@@ -24,7 +25,7 @@ module BF
           '='
         end
       }
-      structs = BF::Trade.price_table.values.map { |range| BF::RangeStruct.new(*range) }
+      structs = price_table.values.map { |range| BF::RangeStruct.new(*range) }
       # [1, 3, 5, 2] => [[1, 3], [3, 5], [5, 2]]
       pairs = structs.map(&:diff).map.with_index { |x, i| [structs[i], structs[i + 1]] }.reject { |x, y| y.nil? }
       pairs.map { |x, y| to_difflized_char.call(x.max <=> y.max) }
