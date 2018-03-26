@@ -21,7 +21,7 @@ module BF
       body = nil
       begin
         body = https.start { |https| response = https.get(pt) }.body
-      rescue Net::HTTPBadResponse => e
+      rescue Net::HTTPBadResponse, Errno::ECONNRESET => e
         retry
       end
       JSON.parse(body)
