@@ -10,9 +10,10 @@ module BF
 
     # for cli
     def current_ranges
-      table = BF::Trade.price_table.transform_values { |v| BF::RangeStruct.new(*v) }
+      price_table = BF::Trade.price_table
+      table = price_table.transform_values { |v| BF::RangeStruct.new(*v) }
       [ table.map { |n, struct| "#{n}m: #{struct.to_s}" }.join(' '),
-        BF::Trade.price_directions.join(' '),
+        BF::Trade.price_directions(price_table).join(' '),
        ].join(' ')
     end
 

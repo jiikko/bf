@@ -7,6 +7,7 @@ require "bf/client"
 require "bf/trade"
 require "bf/fetcher"
 require "bf/cli"
+require "bf/setting"
 
 module BF
   END_POINT = 'api.bitflyer.jp'

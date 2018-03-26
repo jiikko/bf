@@ -48,7 +48,9 @@ module BF
     enum kind: RANGE_CONST.keys
 
     def self.fetch
-      create!(kind: :minutely, price: BF::Client.get_ticker['ltp'])
+      if BF::Setting.enabled_fetch?
+        create!(kind: :minutely, price: BF::Client.get_ticker['ltp'])
+      end
     end
 
     def self.fetch_with_clean
