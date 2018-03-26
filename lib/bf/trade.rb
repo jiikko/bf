@@ -1,5 +1,39 @@
 module BF
+  class RangeStruct
+    attr_accessor :min, :max, :diff
+    def initialize(min, max)
+      self.diff = max - min
+      self.min = min
+      self.max = max
+    end
+
+    def to_s
+      "#{min} ~ #{max} (#{diff})"
+    end
+  end
+
+  module TradeClassDecorator
+    def price_directions
+      to_difflized_char = ->(x){
+        case x
+        when 1
+          '上'
+        when -1
+          '下'
+        when 0
+          '='
+        end
+      }
+      structs = BF::Trade.price_table.values.map { |range| BF::RangeStruct.new(*range) }
+      # [1, 3, 5, 2] => [[1, 3], [3, 5], [5, 2]]
+      pairs = structs.map(&:diff).map.with_index { |x, i| [structs[i], structs[i + 1]] }.reject { |x, y| y.nil? }
+      pairs.map { |x, y| to_difflized_char.call(x.max <=> y.max) }
+    end
+  end
+
   class Trade < ::ActiveRecord::Base
+    extend TradeClassDecorator
+
     # 性能が出ないならten_minutelyとかサマライズする
     RANGE_CONST = {
       minutely: 1.minute,
