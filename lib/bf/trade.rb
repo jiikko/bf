@@ -41,6 +41,15 @@ module BF
       calculate_range(RANGE_CONST[:hourly].ago)
     end
 
+    def self.price_table
+      { 1 => minutely_range,
+        5 => five_minutely_range,
+       10 => ten_minutely_range,
+       30 => half_hourly_range,
+       60 => hourly_range,
+      }
+    end
+
     private
 
     def self.calculate_range(from)
