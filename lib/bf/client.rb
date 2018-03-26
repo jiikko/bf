@@ -18,7 +18,12 @@ module BF
       pt = "#{path}?PRODUCT_CODE=#{product_code}"
       https = Net::HTTP.new(END_POINT, 443)
       https.use_ssl = true
-      body = https.start { |https| response = https.get(pt) }.body
+      body = nil
+      begin
+        body = https.start { |https| response = https.get(pt) }.body
+      rescue Net::HTTPBadResponse => e
+        retry
+      end
       JSON.parse(body)
     end
   end
