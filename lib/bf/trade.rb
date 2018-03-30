@@ -104,7 +104,7 @@ module BF
       end
       deviation_value_table =
         deviation_value_table.select do |deviation_value, price|
-          true if deviation_value < 60 && deviation_value > 30
+          true if deviation_value < 60 && deviation_value > 5
         end
       result_prices = deviation_value_table.map { |deviation_value, price| price }
       [result_prices.max || 0, result_prices.min || 0].sort
