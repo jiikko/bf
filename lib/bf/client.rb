@@ -21,10 +21,19 @@ module BF
       body = nil
       begin
         body = https.start { |https| response = https.get(pt) }.body
-      rescue Net::HTTPBadResponse, Errno::ECONNRESET,  Errno::EHOSTUNREACH => e
+      rescue OpenSSL::SSL::SSLError, Net::HTTPBadResponse, Errno::ECONNRESET,  Errno::EHOSTUNREACH => e
         retry
       end
       JSON.parse(body)
+    end
+
+    def buy(price)
+    end
+
+    def sell(price)
+    end
+
+    def min_price_by_current_range
     end
   end
 end

@@ -19,3 +19,4 @@ ActiveRecord::Base.establish_connection(
   database:  ':memory:'
 )
 ActiveRecord::Migrator.migrate(File.expand_path('../../db/migrate', __FILE__))
+ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), '../test.log'))
