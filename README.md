@@ -26,3 +26,8 @@ bit/run.rb
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## TODO
+* 連続して取得できていることを可視化したい
+* ステータスの取得をバックグラウンドで実行したい
+  * 今はビューから同期通信で実行している
