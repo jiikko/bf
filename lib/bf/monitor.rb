@@ -1,5 +1,13 @@
 module BF
   class Monitor
+    def current_status_from_datastore
+      s = Redis.new.get('BF::Monitor.current_status')
+      if s
+        JSON.parse(s)
+      end
+      # Resque.redis.get 'BF::Monitor.current_status'
+    end
+
     def current_status
       state = BF::Client.get_state
       state.each do |key, value|

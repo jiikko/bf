@@ -1,3 +1,4 @@
+require 'json'
 require 'bf/engine'
 require "active_record"
 require "mysql2"
