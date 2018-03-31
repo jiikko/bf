@@ -1,6 +1,7 @@
 # BF
 * ビットフライヤーのpublic apiから取得した最終取引価格を1~60分の間隔で集計する
 * 注文できる
+* resque
 
 ```
 1m: 932051 ~ 934133 (2082) 5m: 931161 ~ 933118 (1957) 10m: 931448 ~ 934133 (2685) 30m: 931983 ~ 934867 (2884) 60m: 931482 ~ 935966 (4484) 上 下 下 下
@@ -15,14 +16,12 @@
 gem 'bf', github: 'jiikko/bf', branch: :master
 ```
 
-### rails app で動かすなら
-```
-bundle exec rails bf_engine:install:migrations
-```
-
 ## Usage
 ```
 bit/run.rb
+```
+```
+COUNT=5 QUEUE=normal be rake resque:workers
 ```
 
 ## License
