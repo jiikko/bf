@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "mysql2", ">= 0.3.18"
 
   spec.add_dependency "activerecord", ">= 5.0"
+  spec.add_dependency "resque"
 end
