@@ -1,3 +1,4 @@
+require 'json'
 require 'bf/engine'
 require "logger"
 require "active_record"
