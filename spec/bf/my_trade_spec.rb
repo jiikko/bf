@@ -53,6 +53,10 @@ RSpec.describe BF::MyTrade do
 
       context '買い注文が成約した時' do
         it 'buy_trade.succeed! になること' do
+          allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
+          allow_any_instance_of(BF::MyTrade).to receive(:trade_status_of_server?).and_return(true)
+          buy_trade = BF::MyTrade.new.run_buy_trade!(300)
+          expect(buy_trade.succeed?).to eq(true)
         end
 
         it '売りを発注すること(run_sell_trade!)' do
