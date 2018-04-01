@@ -23,13 +23,13 @@ module BF
   END_POINT = 'api.bitflyer.jp'
   PROCUT_CODE = 'FX_BTC_JPY'
 
-  def logger
-    @logger ||= Logger.new("debug.log")
-  end
+  class << self
+    def logger
+      @logger ||= Logger.new("debug.log")
+    end
 
-  def logger=(logger)
-    @logger = logger
+    def logger=(logger)
+      @logger = logger
+    end
   end
-
-  module_function :logger, :logger=
 end
