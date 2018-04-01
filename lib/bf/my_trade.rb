@@ -35,15 +35,13 @@ module BF
         return self
       end
       create_sell_trade!
+      OrderWaitingWorker.async_perform(self.id)
       SellingTradeWorker.async_perform(self.id)
-      check_buy_trade # 買い注文が成約したかをチェックする
       self
     end
 
     def run_sell_trade!
       return if canceled?
-      sell_trade = BF::MyTrade.create!(price: self.price + range, size: order_size, status: :requesting, kind: :sell)
-      self.trade_ship.update!(sell_trade_id: sell_trade.id)
       begin
         order_id = sell_trade.api_client.buy(sell_trade.price)
         sell_trade.update!(order_id: order_id, status: :succeed)
@@ -69,15 +67,6 @@ module BF
       # api_client に問い合わせて注文が通ったか確認をする
     end
 
-    private
-
-    def create_sell_trade!
-      raise("invalid kind, because I called from sell") if self.sell?
-      ship = create_trade_ship!
-      sell_trade_id = BF::MyTrade.create!(price: self.price + range, size: order_size, status: :waiting_to_buy, kind: :sell).id
-      ship.update!(sell_trade_id: sell_trade_id)
-    end
-
     def check_buy_trade
       begin
         Timeout.timeout(10.minutes) do
@@ -86,7 +75,7 @@ module BF
               succeed!
               break
             end
-            if error? || canceled?
+            if canceled?
               BF.logger.info "買い注文をポーリングしていましたが#{status}だったので中止しました。売り注文を出していません。"
               sell_trade.canceled_before_request!
               return
@@ -98,6 +87,15 @@ module BF
         sell_trade.timeout_before_request!
         return
       end
+    end
+
+    private
+
+    def create_sell_trade!
+      raise("invalid kind, because I called from sell") if self.sell?
+      ship = create_trade_ship!
+      sell_trade_id = BF::MyTrade.create!(price: self.price + range, size: order_size, status: :waiting_to_buy, kind: :sell).id
+      ship.update!(sell_trade_id: sell_trade_id)
     end
   end
 end

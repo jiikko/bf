@@ -9,6 +9,7 @@ module BF
           loop do
             if buy_trade.succeed?
               BF.logger.info "買い注文の成約を確認しました。これから売りを発注します。"
+              break
             end
             if buy_trade.sell_trade.canceled_before_request? || buy_trade.sell_trade.timeout_before_request?
               return
