@@ -42,10 +42,9 @@ RSpec.describe BF::MyTrade do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
         begin
           Timeout.timeout(1) do
-            with_resque do
-              buy_trade = BF::MyTrade.new.run_buy_trade!(300)
-              expect(true).to eq(false) # 正しくブロッキングされているなら実行しない
-            end
+            buy_trade = BF::MyTrade.new.run_buy_trade!(300)
+            ResqueSpec.run!('normal')
+            expect(true).to eq(false) # 正しくブロッキングされているなら実行しない
           end
         rescue Timeout::Error
           # 実行時エラーにならなければいいので何もしない
