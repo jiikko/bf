@@ -7,6 +7,7 @@ module BF
       loop do
         if buy_trade.error? || buy_trade.canceled?
           BF.logger.info "買い注文をポーリングしていましたが#{buy_trade.status}だったので中止しました。売り注文を出していません。"
+          buy_trade.sell_trade.canceled_before_request!
           return
         end
         if buy_trade.trade_status_of_server? # TODO リアルタイムAPIを検討する

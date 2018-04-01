@@ -13,8 +13,12 @@ RSpec.describe BF::MyTrade do
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         expect(buy_trade.error?).to eq(true)
         expect(buy_trade.sell_trade).to eq(nil)
-
-        expect(BF::SellingTradeWorker).to have_queue_size_of(0)
+        expect(ResqueSpec.queues.size).to eq(0)
+      end
+    end
+    context '買いの成約待ちに 買い注文が error? || canceled? になった時' do
+      it '注文を売り出さずに' do
+        # buy_trade.error? || buy_trade.canceled?
       end
     end
     context '買い注文を出した時' do
@@ -23,6 +27,7 @@ RSpec.describe BF::MyTrade do
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
 
         expect(BF::SellingTradeWorker).to have_queue_size_of(1)
+        BF::SellingTradeWorker
 
         expect(buy_trade.price).to eq(300)
         expect(buy_trade.buy?).to eq(true)
@@ -32,11 +37,22 @@ RSpec.describe BF::MyTrade do
         expect(buy_trade.sell_trade.sell?).to eq(true)
         expect(buy_trade.sell_trade.waiting_to_buy?).to eq(true)
       end
-    end
-  end
 
-  describe "run_sell_trade!" do
-    it "キャンセルされたら中止すること" do
+      it '買いが成約するまで待つこと' do
+      end
+
+      context '買い注文が成約した時' do
+        it 'buy_trade.succeed! になること' do
+        end
+
+        it '売りを発注すること(run_sell_trade!)' do
+        end
+
+        context "client.sellでエラーが起きた時" do
+          it 'sell_trade.status が error になること' do
+          end
+        end
+      end
     end
   end
 end

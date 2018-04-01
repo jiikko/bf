@@ -10,6 +10,7 @@ module BF
       :timeout,
       :error,
       :canceled,
+      :canceled_before_request,
     ]
     enum kind: [:buy, :sell]
 
