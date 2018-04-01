@@ -19,7 +19,7 @@ module BF
 
     # 買いから入る
     def self.trade_from_buy!(target_price=nil)
-      BuyingTradeWorker.perform_async(my_trade_id)
+      BuyingTradeWorker.async_perform(my_trade_id)
     end
 
     def run_buy_trade!(target_price=nil)
@@ -33,7 +33,7 @@ module BF
         return self
       end
       create_sell_trade!
-      SellingTradeWorker.perform_async(self.id)
+      SellingTradeWorker.async_perform(self.id)
       self
     end
 

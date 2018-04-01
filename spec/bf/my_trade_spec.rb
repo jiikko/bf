@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe BF::MyTrade do
+  before do
+    ResqueSpec.reset!
+  end
+
   describe '.run_buy_trade!' do
     context "client.buyでエラーが起きた時" do
       it "sell_tradeは作らないこと" do
@@ -9,16 +13,19 @@ RSpec.describe BF::MyTrade do
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         expect(buy_trade.error?).to eq(true)
         expect(buy_trade.sell_trade).to eq(nil)
+
+        expect(BF::SellingTradeWorker).to have_queue_size_of(0)
       end
     end
     context '買い注文を出した時' do
       it 'pairのmy_tradeを作成すること' do
-        allow_any_instance_of(BF::SellingTradeWorker).to receive(:perform)
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
+
+        expect(BF::SellingTradeWorker).to have_queue_size_of(1)
+
         expect(buy_trade.price).to eq(300)
         expect(buy_trade.buy?).to eq(true)
-        # expect(buy_trade.waiting_to_request?).to eq(true)
         expect(buy_trade.requested?).to eq(true)
 
         expect(buy_trade.sell_trade.price).to eq(700)

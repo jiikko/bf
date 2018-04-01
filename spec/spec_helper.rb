@@ -1,6 +1,7 @@
 require "bundler/setup"
 require "pry"
 require "bf"
+require "resque_spec"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

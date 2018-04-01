@@ -3,7 +3,6 @@ require 'spec_helper'
 RSpec.describe BF::Trade do
   describe '.fetch' do
     it do
-      skip
       BF::Trade.delete_all
       BF::Trade.fetch
       expect(BF::Trade.count).to eq(1)
