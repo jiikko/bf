@@ -5,7 +5,7 @@ module BF
       buy_trade = BF::MyTrade.find(buy_trade_id)
       # 買い注文が成約したかを確認する
       begin
-        Timeout.timeout(10.minutes) do
+        Timeout.timeout(30.minutes) do
           loop do
             if buy_trade.succeed?
               BF.logger.info "買い注文の成約を確認しました。これから売りを発注します。"

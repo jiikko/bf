@@ -84,7 +84,8 @@ module BF
           end
         end
       rescue Timeout::Error => e
-        sell_trade.timeout_before_request!
+        sell_trade.canceled_before_request!
+        timeout_before_request!
         return
       end
     end
