@@ -43,7 +43,7 @@ module BF
     def run_sell_trade!
       return if canceled?
       begin
-        order_id = sell_trade.api_client.buy(sell_trade.price)
+        order_id = sell_trade.api_client.sell(sell_trade.price)
         sell_trade.update!(order_id: order_id, status: :succeed)
       rescue => e
         sell_trade.update!(error_trace: e.inspect, status: :error)
