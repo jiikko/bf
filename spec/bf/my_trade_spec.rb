@@ -24,10 +24,10 @@ RSpec.describe BF::MyTrade do
     context '買い注文を出した時' do
       it 'pairのmy_tradeを作成すること' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
+        allow_any_instance_of(BF::MyTrade).to receive(:check_buy_trade)
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
 
         expect(BF::SellingTradeWorker).to have_queue_size_of(1)
-        BF::SellingTradeWorker
 
         expect(buy_trade.price).to eq(300)
         expect(buy_trade.buy?).to eq(true)
@@ -39,6 +39,17 @@ RSpec.describe BF::MyTrade do
       end
 
       it '買いが成約するまで待つこと' do
+        allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
+        begin
+          Timeout.timeout(1) do
+            with_resque do
+              buy_trade = BF::MyTrade.new.run_buy_trade!(300)
+              expect(true).to eq(false) # 正しくブロッキングされているなら実行しない
+            end
+          end
+        rescue Timeout::Error
+          # 実行時エラーにならなければいいので何もしない
+        end
       end
 
       context '買い注文が成約した時' do
