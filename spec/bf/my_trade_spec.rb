@@ -16,7 +16,7 @@ RSpec.describe BF::MyTrade do
         expect(ResqueSpec.queues['normal'].size).to eq(0)
       end
     end
-    context '買いの成約待ちがタイムアウトを迎えた時' do
+    context '買いの約定待ちがタイムアウトを迎えた時' do
       it '買い売り注文を売り出さずにキャンセルステータスにする' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
         allow_any_instance_of(BF::MyTrade).to receive(:trade_status_of_server?) { raise(Timeout::Error) }
@@ -26,7 +26,7 @@ RSpec.describe BF::MyTrade do
         expect(buy_trade.sell_trade.canceled_before_request?).to eq(true)
       end
     end
-    context '買いの成約待ちに 買い注文が canceled? になった時' do
+    context '買いの約定待ちに 買い注文が canceled? になった時' do
       it '買い売り注文を売り出さずにキャンセルステータスにする' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
         allow_any_instance_of(BF::MyTrade).to receive(:canceled?) { true }
@@ -56,7 +56,7 @@ RSpec.describe BF::MyTrade do
         expect(buy_trade.sell_trade.sell?).to eq(true)
         expect(buy_trade.sell_trade.waiting_to_buy?).to eq(true)
       end
-      it '買いが成約しないと売りを発注しない' do
+      it '買いが約定しないと売りを発注しない' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
         allow_any_instance_of(BF::MyTrade).to receive(:check_buy_trade)
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
@@ -71,7 +71,7 @@ RSpec.describe BF::MyTrade do
         end
       end
 
-      context '買い注文が成約した時' do
+      context '買い注文が約定した時' do
         it 'buy_trade.succeed! になること' do
           allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
           allow_any_instance_of(BF::MyTrade).to receive(:trade_status_of_server?).and_return(true)

@@ -28,7 +28,7 @@ module BF
       target_price ||= api_client.min_price_by_current_range
       update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy)
       begin
-        order_id = api_client.buy(target_price) # まだ成約していない
+        order_id = api_client.buy(target_price) # まだ約定していない
         update!(order_id: order_id, status: :requested)
       rescue => e
         update!(error_trace: e.inspect, status: :error)
