@@ -64,7 +64,15 @@ module BF
     end
 
     def trade_status_of_server?
-      # api_client に問い合わせて注文が通ったか確認をする
+      current_status = BF::Client.new.get_order(self.order_id)
+      case current_status
+      when 'COMPLETED'
+        true
+      when 'ACTIVE'
+        false
+      else # 'CANCELED', 'EXPIRED', 'REJECTED' が返ってくるのは想定外
+        raise("エラー。買い注文の約低待ち中に 買い注文のステータスが #{current_status} が返ってきました。")
+      end
     end
 
     def check_buy_trade

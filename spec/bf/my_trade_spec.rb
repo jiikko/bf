@@ -29,6 +29,8 @@ RSpec.describe BF::MyTrade do
     context '買いの約定待ちに 買い注文が canceled? になった時' do
       it '買い売り注文を売り出さずにキャンセルステータスにする' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
+        # 約定待ちになってほしいのでACTIVEを返す
+        allow_any_instance_of(BF::Client).to receive(:get_order).and_return('ACTIVE')
         allow_any_instance_of(BF::MyTrade).to receive(:canceled?) { true }
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         ResqueSpec.run!('normal')

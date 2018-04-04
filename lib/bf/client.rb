@@ -36,23 +36,24 @@ module BF
         @uri ||= URI.parse("https://#{END_POINT}")
       end
 
-      def run(path: , http_class: )
-        body = yield
+      def run(path: , http_class: , query: nil)
+        body = yield if block_given?
         uri.path = path
+        uri.query = query if query
         text = [timestamp, http_method, uri.request_uri, body].join
         sign = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), api_secret, text)
-        options = Net::HTTP::Post.new(uri.request_uri, initheader = {
+        options = http_class.new(uri.request_uri, initheader = {
           "ACCESS-KEY" => api_key,
           "ACCESS-TIMESTAMP" => timestamp,
           "ACCESS-SIGN" => sign,
           "Content-Type" => "application/json",
         })
         options.body = body
-        https = http_class.new(uri.host, uri.port)
+        https = Net::HTTP.new(uri.host, uri.port)
         https.use_ssl = true
         response = https.request(options)
-        BF.logger.info response.body
-        JSON.parse(response.body)['child_order_acceptance_id']
+        BF.logger.info [text, response.body].inspect
+        JSON.parse(response.body)
       end
     end
 
@@ -66,6 +67,23 @@ module BF
           }
           default_body.merge(price: price, size: size).to_json
         end
+        response['child_order_acceptance_id']
+      end
+    end
+
+    class GetOrderRequest < BaseRequest
+      # order status
+      # => 'ACTIVE', 'COMPLETED', 'CANCELED', 'EXPIRED', 'REJECTED'
+      def run(order_id)
+        response = super(path: "/v1/me/getchildorders",
+                         http_class: Net::HTTP::Get,
+                         query: "product_code=#{PROCUT_CODE}&child_order_id=#{order_id}")
+        order = response.first
+        order['child_order_state']
+      end
+
+      def http_method
+        :GET
       end
     end
 
@@ -103,6 +121,10 @@ module BF
     end
 
     def sell(price)
+    end
+
+    def get_order(order_id)
+      GetOrderRequest.new.run(order_id)
     end
   end
 end
