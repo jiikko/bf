@@ -15,7 +15,6 @@ require "bf/my_trade"
 require "bf/my_trade_ship"
 require "bf/worker/base_worker"
 require "bf/worker/order_waiting_worker"
-require "bf/worker/buying_trade_worker"
 require "bf/worker/selling_trade_worker"
 require "bf/initialize/resque"
 

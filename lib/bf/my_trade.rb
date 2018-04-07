@@ -19,11 +19,6 @@ module BF
     has_one :sell_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :sell_trade
     has_one :buy_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :buy_trade
 
-    # 買いから入る
-    def self.trade_from_buy!(target_price=nil)
-      BuyingTradeWorker.async_perform(my_trade_id)
-    end
-
     def run_buy_trade!(target_price=nil)
       target_price ||= api_client.min_price_by_current_range
       update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy)
