@@ -6,14 +6,14 @@ RSpec.describe BF::Client do
       allow_any_instance_of(Net::HTTP).to receive(:request) do
         OpenStruct.new(body: { 'child_order_acceptance_id' => 'test' }.to_json)
       end
-      expect(BF::Client.new.buy(9999999999, 0.001)).to eq('test')
+      expect(BF::Client.new.buy(1, 0.001)).to eq('test')
     end
     context 'エラーレスポンスが返ってきた時' do
       it '例外をなげること' do
         allow_any_instance_of(Net::HTTP).to receive(:request) do
           OpenStruct.new(body: "{\"status\":-106,\"error_message\":\"The price is too low.\",\"data\":null}")
         end
-        expect { BF::Client.new.buy(99999999, 0.001) }.to raise_error(RuntimeError)
+        expect { BF::Client.new.buy(1, 0.001) }.to raise_error(RuntimeError)
       end
     end
   end
@@ -23,14 +23,14 @@ RSpec.describe BF::Client do
       allow_any_instance_of(Net::HTTP).to receive(:request) do
         OpenStruct.new(body: { 'child_order_acceptance_id' => 'sell_test' }.to_json)
       end
-      expect(BF::Client.new.sell(1, 0.001)).to eq('sell_test')
+      expect(BF::Client.new.sell(9999999999, 0.001)).to eq('sell_test')
     end
     context 'エラーレスポンスが返ってきた時' do
       it '例外をなげること' do
         allow_any_instance_of(Net::HTTP).to receive(:request) do
           OpenStruct.new(body: "{\"status\":-106,\"error_message\":\"The price is too low.\",\"data\":null}")
         end
-        expect { BF::Client.new.sell(1, 0.001) }.to raise_error(RuntimeError)
+        expect { BF::Client.new.sell(9999999999, 0.001) }.to raise_error(RuntimeError)
       end
     end
   end
