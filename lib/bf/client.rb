@@ -57,25 +57,32 @@ module BF
         https.use_ssl = true
         response = https.request(options)
         BF.logger.info [text, response.body].inspect
-        JSON.parse(response.body)
+        res = JSON.parse(response.body)
+        if res.is_a?(Array)
+          return res
+        end
+        if res['child_order_acceptance_id']
+          return res['child_order_acceptance_id']
+        end
+        if res['error_message']
+          raise(res['error_message'])
+        end
       end
     end
 
     class BuyRequest < BaseRequest
       def run(price, size)
-        response = super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do |body|
+        super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do |body|
           body.merge(price: price, size: size, side: 'BUY').to_json
         end
-        response['child_order_acceptance_id'] if response.present?
       end
     end
 
     class SellRequest < BaseRequest
       def run(price, size)
-        response = super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do |body|
+        super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do |body|
           body.merge(price: price, size: size, side: 'SELL').to_json
         end
-        response['child_order_acceptance_id'] if response.present?
       end
     end
 
@@ -87,7 +94,7 @@ module BF
                          http_class: Net::HTTP::Get,
                          query: "product_code=#{PROCUT_CODE}&child_order_acceptance_id=#{order_id}")
         order = response.first
-        order['child_order_state'] if response.present?
+        order['child_order_state'] if order.present?
       end
 
       def http_method
