@@ -85,7 +85,7 @@ module BF
       def run(order_id)
         response = super(path: "/v1/me/getchildorders",
                          http_class: Net::HTTP::Get,
-                         query: "product_code=#{PROCUT_CODE}&child_order_id=#{order_id}")
+                         query: "product_code=#{PROCUT_CODE}&child_order_acceptance_id=#{order_id}")
         order = response.first
         order['child_order_state'] if response.present?
       end
