@@ -1,3 +1,5 @@
+ENV['RUN_ENV'] = 'test'
+
 require "bundler/setup"
 require "pry"
 require "bf"

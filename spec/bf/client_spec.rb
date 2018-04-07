@@ -1,6 +1,24 @@
 require 'spec_helper'
 
 RSpec.describe BF::Client do
+  describe '#buy' do
+    it 'success' do
+      allow_any_instance_of(Net::HTTP).to receive(:request) do
+        OpenStruct.new(body: { 'child_order_acceptance_id' => 'test' }.to_json)
+      end
+      expect(BF::Client.new.buy(9999999999, 0.001)).to eq('test')
+    end
+  end
+
+  describe '#sell' do
+    it 'success' do
+      allow_any_instance_of(Net::HTTP).to receive(:request) do
+        OpenStruct.new(body: { 'child_order_acceptance_id' => 'sell_test' }.to_json)
+      end
+      expect(BF::Client.new.sell(1, 0.001)).to eq('sell_test')
+    end
+  end
+
   describe 'get_health' do
     it do
       result = nil

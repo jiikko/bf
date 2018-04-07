@@ -25,7 +25,12 @@ module BF
 
   class << self
     def logger
-      @logger ||= Logger.new("debug.log")
+      @logger ||=
+        if ENV['RUN_ENV'] == 'test'
+          Logger.new("log_test.log")
+        else
+          Logger.new("log_development.log")
+        end
     end
 
     def logger=(logger)
