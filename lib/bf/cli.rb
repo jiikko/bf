@@ -2,7 +2,7 @@ module BF
   class CLI
     def self.run
       cli = new
-      cli.connect!
+      cli.db_connect!
       cli.start
     end
 
@@ -15,7 +15,7 @@ module BF
       end
     end
 
-    def connect!
+    def db_connect!
       database_yml = File.expand_path('../../../database.yml', __FILE__)
       ActiveRecord::Base.configurations = YAML.load_file(database_yml)
       ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), '../../debug.log'))

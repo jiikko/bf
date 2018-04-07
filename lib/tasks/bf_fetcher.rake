@@ -8,7 +8,7 @@ namespace :bf do
       puts 'start fetcher process'
       unless defined?(Rails)
         cli = BF::CLI.new
-        cli.connect!
+        cli.db_connect!
       end
       BF::Fetcher.new.run
     end
@@ -21,7 +21,7 @@ namespace :bf do
       puts 'start status fetcher process'
       unless defined?(Rails)
         cli = BF::CLI.new
-        cli.connect!
+        cli.db_connect!
       end
       BF::StatusFetcher.new.run
     end

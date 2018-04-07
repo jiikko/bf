@@ -11,5 +11,5 @@ require "bf"
 # Pry.start
 
 require "irb"
-BF::CLI.new.connect!
+BF::CLI.new.db_connect!
 IRB.start(__FILE__)

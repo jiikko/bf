@@ -15,7 +15,7 @@ module BF
     ]
     enum kind: [:buy, :sell]
 
-    has_one :trade_ship, class_name: 'BF::MyTradeShip', foreign_key: :buy_trade_id
+    has_one :trade_ship, class_name: 'BF::MyTradeShip', foreign_key: :buy_trade_id, dependent: :destroy
     has_one :sell_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :sell_trade
     has_one :buy_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :buy_trade
 
