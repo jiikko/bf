@@ -37,7 +37,11 @@ module BF
       end
 
       def run(path: , http_class: , query: nil)
-        body = yield if block_given?
+        default_body = {
+          product_code: PROCUT_CODE,
+          child_order_type: 'LIMIT',
+        }
+        body = yield(default_body) if block_given?
         uri.path = path
         uri.query = query if query
         text = [timestamp, http_method, uri.request_uri, body].join
@@ -59,33 +63,19 @@ module BF
 
     class BuyRequest < BaseRequest
       def run(price, size)
-        response = super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do
-          default_body = {
-            product_code: PROCUT_CODE,
-            child_order_type: 'LIMIT',
-            side: 'BUY',
-          }
-          default_body.merge(price: price, size: size).to_json
+        response = super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do |body|
+          body.merge(price: price, size: size, side: 'BUY').to_json
         end
-        if response.present?
-          response['child_order_acceptance_id']
-        end
+        response['child_order_acceptance_id'] if response.present?
       end
     end
 
     class SellRequest < BaseRequest
       def run(price, size)
-        response = super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do
-          default_body = {
-            product_code: PROCUT_CODE,
-            child_order_type: 'LIMIT',
-            side: 'SELL',
-          }
-          default_body.merge(price: price, size: size).to_json
+        response = super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do |body|
+          body.merge(price: price, size: size, side: 'SELL').to_json
         end
-        if response.present?
-          response['child_order_acceptance_id']
-        end
+        response['child_order_acceptance_id'] if response.present?
       end
     end
 
@@ -97,9 +87,7 @@ module BF
                          http_class: Net::HTTP::Get,
                          query: "product_code=#{PROCUT_CODE}&child_order_id=#{order_id}")
         order = response.first
-        if response.present?
-          order['child_order_state']
-        end
+        order['child_order_state'] if response.present?
       end
 
       def http_method
