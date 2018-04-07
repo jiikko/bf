@@ -48,7 +48,7 @@ module BF
           "ACCESS-SIGN" => sign,
           "Content-Type" => "application/json",
         })
-        options.body = body
+        options.body = body if block_given?
         https = Net::HTTP.new(uri.host, uri.port)
         https.use_ssl = true
         response = https.request(options)
@@ -59,7 +59,7 @@ module BF
 
     class BuyRequest < BaseRequest
       def run(price, size)
-        response = super(path: '/v1/me/sendchildorder', http_class: Net::HTTP) do
+        response = super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do
           default_body = {
             product_code: PROCUT_CODE,
             child_order_type: 'LIMIT',
@@ -67,7 +67,25 @@ module BF
           }
           default_body.merge(price: price, size: size).to_json
         end
-        response['child_order_acceptance_id']
+        if response.present?
+          response['child_order_acceptance_id']
+        end
+      end
+    end
+
+    class SellRequest < BaseRequest
+      def run(price, size)
+        response = super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do
+          default_body = {
+            product_code: PROCUT_CODE,
+            child_order_type: 'LIMIT',
+            side: 'SELL',
+          }
+          default_body.merge(price: price, size: size).to_json
+        end
+        if response.present?
+          response['child_order_acceptance_id']
+        end
       end
     end
 
@@ -79,7 +97,9 @@ module BF
                          http_class: Net::HTTP::Get,
                          query: "product_code=#{PROCUT_CODE}&child_order_id=#{order_id}")
         order = response.first
-        order['child_order_state']
+        if response.present?
+          order['child_order_state']
+        end
       end
 
       def http_method
@@ -95,9 +115,6 @@ module BF
       def get_ticker
         new.get("/v1/ticker", PROCUT_CODE)
       end
-    end
-
-    def initialize
     end
 
     def get(path, product_code)
@@ -120,7 +137,8 @@ module BF
       BuyRequest.new.run(price, size)
     end
 
-    def sell(price)
+    def sell(price, size)
+      SellRequest.new.run(price, size)
     end
 
     def get_order(order_id)

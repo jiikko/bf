@@ -28,7 +28,7 @@ module BF
       target_price ||= api_client.min_price_by_current_range
       update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy)
       begin
-        order_id = api_client.buy(target_price) # まだ約定していない
+        order_id = api_client.buy(target_price, order_size) # まだ約定していない
         update!(order_id: order_id, status: :requested)
       rescue => e
         update!(error_trace: e.inspect, status: :error)
@@ -43,7 +43,7 @@ module BF
     def run_sell_trade!
       return if canceled?
       begin
-        order_id = sell_trade.api_client.sell(sell_trade.price)
+        order_id = sell_trade.api_client.sell(sell_trade.price, sell_trade.order_size)
         sell_trade.update!(order_id: order_id, status: :succeed)
       rescue => e
         sell_trade.update!(error_trace: e.inspect, status: :error)
