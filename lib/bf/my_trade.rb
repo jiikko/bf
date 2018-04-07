@@ -65,6 +65,8 @@ module BF
         true
       when 'ACTIVE'
         false
+      when nil # 注文した直後だとnil がくる
+        false
       else # 'CANCELED', 'EXPIRED', 'REJECTED' が返ってくるのは想定外
         raise("エラー。買い注文の約低待ち中に 買い注文のステータスが #{current_status} が返ってきました。")
       end

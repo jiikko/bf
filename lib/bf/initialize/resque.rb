@@ -1,3 +1,5 @@
+ENV['RUN_ENV'] = 'resque'
+
 require "bundler/setup"
 require 'bf'
 
