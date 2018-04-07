@@ -1,6 +1,10 @@
+ENV['RUN_ENV'] = 'test'
+
 require "bundler/setup"
 require "pry"
 require "bf"
+require "resque_spec"
+require "support/resque_spec"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -19,3 +23,4 @@ ActiveRecord::Base.establish_connection(
   database:  ':memory:'
 )
 ActiveRecord::Migrator.migrate(File.expand_path('../../db/migrate', __FILE__))
+ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), '../test.log'))
