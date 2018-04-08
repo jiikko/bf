@@ -33,6 +33,9 @@ The gem is available as open source under the terms of the [MIT License](https:/
 * queue、normalしか用意してないけど処理によっては他のqueueも用意する
 * 取引所のステータスをDBにいれる(いまレディス)
   * 30分以内に負荷が高いと注文を入れない、という機能をいれたい(注文が遅れるとつらい)
+* redis のワーニングをけす
+  * The client method is deprecated as of redis-rb 4.0.0, please use the new _clientmethod instead. Support for the old method will be removed in redis-namespace 2.0.
+* 公式からキャンセルするとorder_idでとれなくなるので、一度order_idをとったらステータスを変えて、以降ステータスがとれなくなったら削除された、と判断するよう修正する
 
 ## 買い注文を入れるロジック
 * 上上上上 かつ 1~5足の最小差額(赤いバー)(独自指標)が100の時は発注しない
