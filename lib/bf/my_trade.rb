@@ -74,7 +74,7 @@ module BF
 
     def check_buy_trade
       begin
-        Timeout.timeout(10.minutes) do
+        Timeout.timeout(15.minutes) do
           loop do
             if trade_status_of_server? # TODO リアルタイムAPIを検討する
               succeed!
@@ -89,6 +89,7 @@ module BF
           end
         end
       rescue Timeout::Error => e
+        BF.logger.info "買い注文をポーリングしていましたがタイムアウトです。売り注文を出していません。"
         sell_trade.canceled_before_request!
         timeout_before_request!
         return
