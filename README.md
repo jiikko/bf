@@ -40,6 +40,7 @@ The gem is available as open source under the terms of the [MIT License](https:/
   * 買いが失敗した旨のログとか、アクションが必要な旨のログも見れるようにする
 * 買い注文をポーリングする order_waiting_worker を廃止したい
   * あるとテストしやすいけどジョブが増えてしまう
+* 注文時にレンジ内に入っているかバリデーションをかける
 
 ## 買い注文を入れるロジック
 * 上上上上 かつ 1~5足の最小差額(赤いバー)(独自指標)が100の時は発注しない
