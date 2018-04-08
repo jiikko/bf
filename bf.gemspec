@@ -30,5 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "resque_spec"
 
   spec.add_dependency "activerecord", ">= 5.0"
-  spec.add_dependency "resque"
+  spec.add_dependency "resque", "< 4"
 end

@@ -3,7 +3,7 @@ PATH
   specs:
     bf (0.1.0)
       activerecord (>= 5.0)
-      resque
+      resque (< 4)
 
 GEM
   remote: https://rubygems.org/
