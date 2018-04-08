@@ -41,6 +41,8 @@ The gem is available as open source under the terms of the [MIT License](https:/
 * 買い注文をポーリングする order_waiting_worker を廃止したい
   * あるとテストしやすいけどジョブが増えてしまう
 * 注文時にレンジ内に入っているかバリデーションをかける
+* タイムアウトの実装にTimeoutモジュールを使うのをやめて自分で計測する
+  * resqueジョブを積み直した時に時間がリセットされるのと、Timeoutは邪悪
 
 ## 買い注文を入れるロジック
 * 上上上上 かつ 1~5足の最小差額(赤いバー)(独自指標)が100の時は発注しない
