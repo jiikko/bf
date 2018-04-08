@@ -89,7 +89,8 @@ module BF
           end
         end
       rescue Timeout::Error => e
-        BF.logger.info "買い注文をポーリングしていましたがタイムアウトです。売り注文を出していません。"
+        BF.logger.info "買いをポーリングしていましたがタイムアウトです。買い注文をキャンセルします。売り注文を出していません。"
+        api_client.cancel_order(self.order_id)
         sell_trade.canceled_before_request!
         timeout_before_request!
         return

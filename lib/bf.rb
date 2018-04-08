@@ -18,6 +18,7 @@ require "bf/worker/order_waiting_worker"
 require "bf/worker/selling_trade_worker"
 require "bf/initialize/resque"
 require "bf/worker/test_worker"
+require "bf/resque_helper"
 
 module BF
   END_POINT = 'api.bitflyer.jp'

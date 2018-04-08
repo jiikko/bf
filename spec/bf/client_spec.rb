@@ -35,6 +35,15 @@ RSpec.describe BF::Client do
     end
   end
 
+  describe '#cancel_order' do
+    it 'success' do
+      allow_any_instance_of(Net::HTTP).to receive(:request) do
+        OpenStruct.new(body: '', code: '200')
+      end
+      expect(BF::Client.new.cancel_order('bar')).to eq('200')
+    end
+  end
+
   describe 'get_health' do
     it do
       result = nil

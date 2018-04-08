@@ -57,15 +57,19 @@ module BF
         https.use_ssl = true
         response = https.request(options)
         BF.logger.info [text, response.body].inspect
-        res = JSON.parse(response.body)
-        if res.is_a?(Array)
-          return res
-        end
-        if res['child_order_acceptance_id']
-          return res['child_order_acceptance_id']
-        end
-        if res['error_message']
-          raise(res['error_message'])
+        if response.body.empty?
+          return response.code
+        else
+          res = JSON.parse(response.body)
+          if res.is_a?(Array) # for get order
+            return res
+          end
+          if res['child_order_acceptance_id'] # for new order
+            return res['child_order_acceptance_id']
+          end
+          if res['error_message'] # for new order
+            raise(res['error_message'])
+          end
         end
       end
     end
@@ -82,6 +86,14 @@ module BF
       def run(price, size)
         super(path: '/v1/me/sendchildorder', http_class: Net::HTTP::Post) do |body|
           body.merge(price: price, size: size, side: 'SELL').to_json
+        end
+      end
+    end
+
+    class CancelRequest < BaseRequest
+      def run(order_id)
+        super(path: '/v1/me/cancelchildorder', http_class: Net::HTTP::Post) do |body|
+          body.merge(child_order_acceptance_id: order_id).to_json
         end
       end
     end
@@ -142,6 +154,10 @@ module BF
 
     def get_order(order_id)
       GetOrderRequest.new.run(order_id)
+    end
+
+    def cancel_order(order_id)
+      CancelRequest.new.run(order_id)
     end
   end
 end
