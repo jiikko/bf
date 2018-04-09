@@ -1,33 +1,6 @@
 module BF
   class Monitor
-    def current_status_from_datastore
-      s = Redis.new.get('BF::Monitor.current_status')
-      if s
-        JSON.parse(s)
-      end
-      # Resque.redis.get 'BF::Monitor.current_status'
-    end
-
-    def current_status
-      state = BF::Client.get_state
-      state.each do |key, value|
-        state[key] = state_const[key][value]
-      end
-      state
-    end
-
-    # for cli
-    def current_ranges
-      price_table = BF::Trade.price_table
-      table = price_table.transform_values { |v| BF::RangeStruct.new(*v) }
-      [ table.map { |n, struct| "#{n}m: #{struct.to_s}" }.join(' '),
-        BF::Trade.price_directions(price_table).join(' '),
-       ].join(' ')
-    end
-
-    private
-
-    def state_const
+    def self.state_const
       { 'health' => {
           'NORMAL' => '取引所は稼動しています。',
           'BUSY' => '取引所に負荷がかかっている状態です。',
@@ -46,6 +19,37 @@ module BF
           'MATURED' => 'Lightning Futures の満期に到達',
         }
       }
+    end
+
+    def self.state_const_with_number
+      {}.tap do |hash|
+        BF::Monitor.state_const['health'].values.reverse.map(&:itself).each.with_index { |val, i| hash[val] = i }
+      end
+    end
+
+    def current_status_from_datastore
+      s = Redis.new.get('BF::Monitor.current_status')
+      if s
+        JSON.parse(s)
+      end
+      # Resque.redis.get 'BF::Monitor.current_status'
+    end
+
+    def current_status
+      state = BF::Client.get_state
+      state.each do |key, value|
+        state[key] = self.class.state_const[key][value]
+      end
+      state
+    end
+
+    # for cli
+    def current_ranges
+      price_table = BF::Trade.price_table
+      table = price_table.transform_values { |v| BF::RangeStruct.new(*v) }
+      [ table.map { |n, struct| "#{n}m: #{struct.to_s}" }.join(' '),
+        BF::Trade.price_directions(price_table).join(' '),
+       ].join(' ')
     end
   end
 end
