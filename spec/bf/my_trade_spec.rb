@@ -48,22 +48,20 @@ RSpec.describe BF::MyTrade do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
         allow_any_instance_of(BF::MyTrade).to receive(:check_buy_trade)
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
-        expect(ResqueSpec.queues['normal'].map { |x| x[:class] }).to match_array([
-          "BF::SellingTradeWorker", "BF::OrderWaitingWorker"
-        ])
+        expect(ResqueSpec.queues['normal'].map { |x| x[:class] }).to eq(["BF::SellingTradeWorker"])
         expect(buy_trade.price).to eq(300)
         expect(buy_trade.buy?).to eq(true)
         expect(buy_trade.requested?).to eq(true)
         expect(buy_trade.sell_trade.price).to eq(700)
         expect(buy_trade.sell_trade.sell?).to eq(true)
-        expect(buy_trade.sell_trade.waiting_to_buy?).to eq(true)
+        expect(buy_trade.sell_trade.waiting_to_sell?).to eq(true)
       end
       it '買いが約定しないと売りを発注しない' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
         allow_any_instance_of(BF::MyTrade).to receive(:check_buy_trade)
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
-        expect(ResqueSpec.queues['normal'].size).to eq(2)
-        expect(buy_trade.sell_trade.waiting_to_buy?).to eq(true)
+        expect(ResqueSpec.queues['normal'].size).to eq(1)
+        expect(buy_trade.sell_trade.waiting_to_sell?).to eq(true)
         begin
           Timeout.timeout(1) do
             ResqueSpec.run!('normal')
@@ -86,9 +84,7 @@ RSpec.describe BF::MyTrade do
           allow_any_instance_of(BF::Client).to receive(:sell).and_return(1)
           allow_any_instance_of(BF::MyTrade).to receive(:trade_status_of_server?).and_return(true)
           buy_trade = BF::MyTrade.new.run_buy_trade!(300)
-          expect(ResqueSpec.queues['normal'].map { |x| x[:class] }).to match_array([
-            "BF::SellingTradeWorker", "BF::OrderWaitingWorker"
-          ])
+          expect(ResqueSpec.queues['normal'].map { |x| x[:class] }).to eq([ "BF::SellingTradeWorker"])
           ResqueSpec.run!('normal')
           expect(buy_trade.reload.succeed?).to eq(true)
           expect(buy_trade.sell_trade.succeed?).to eq(true)

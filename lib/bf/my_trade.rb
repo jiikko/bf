@@ -2,7 +2,7 @@ module BF
   class MyTrade < ::ActiveRecord::Base
     enum status: [
       :waiting_to_request,
-      :waiting_to_buy,
+      :waiting_to_sell,
       :requested,
       :requesting,
       :succeed,
@@ -19,6 +19,10 @@ module BF
     has_one :sell_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :sell_trade
     has_one :buy_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :buy_trade
 
+    def find_by_sell(trade_id)
+      BF::MyTrade.find_by(kind: :sell, id: sell_trade_id)
+    end
+
     def run_buy_trade!(target_price=nil)
       target_price ||= api_client.min_price_by_current_range
       update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy)
@@ -30,7 +34,6 @@ module BF
         return self
       end
       create_sell_trade!
-      OrderWaitingWorker.async_perform(self.id)
       SellingTradeWorker.async_perform(self.id)
       self
     end
@@ -72,11 +75,11 @@ module BF
       end
     end
 
-    def check_buy_trade
+    def waiting_to_sell
       begin
         Timeout.timeout(15.minutes) do
           loop do
-            if trade_status_of_server? # TODO リアルタイムAPIを検討する
+            if trade_status_of_server?
               succeed!
               break
             end
@@ -85,7 +88,7 @@ module BF
               sell_trade.canceled_before_request!
               return
             end
-            sleep(2)
+            sleep(1)
           end
         end
       rescue Timeout::Error => e
@@ -102,7 +105,7 @@ module BF
     def create_sell_trade!
       raise("invalid kind, because I called from sell") if self.sell?
       ship = create_trade_ship!
-      sell_trade_id = BF::MyTrade.create!(price: self.price + range, size: order_size, status: :waiting_to_buy, kind: :sell).id
+      sell_trade_id = BF::MyTrade.create!(price: self.price + range, size: order_size, status: :waiting_to_sell, kind: :sell).id
       ship.update!(sell_trade_id: sell_trade_id)
     end
   end

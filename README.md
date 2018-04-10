@@ -38,8 +38,6 @@ The gem is available as open source under the terms of the [MIT License](https:/
 * 売りが失敗した場合retryをしたい
 * ログ出力への出力もしつつ、ログテーブルにも出力したい
   * 買いが失敗した旨のログとか、アクションが必要な旨のログも見れるようにする
-* 買い注文をポーリングする order_waiting_worker を廃止したい
-  * あるとテストしやすいけどジョブが増えてしまう
 * 注文時にレンジ内に入っているかバリデーションをかける
 * タイムアウトの実装にTimeoutモジュールを使うのをやめて自分で計測する
   * resqueジョブを積み直した時に時間がリセットされるのと、Timeoutは邪悪

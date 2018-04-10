@@ -1,8 +1,8 @@
 module BF
   class OrderWaitingWorker < BaseWorker
-    def perform(buy_trade_id)
-      buy_trade = BF::MyTrade.find(buy_trade_id)
-      buy_trade.check_buy_trade
+    def perform(sell_trade_id)
+      sell_trade = BF::MyTrade.find_by_sell(sell_trade_id)
+      sell_trade.check_sell_trade
     end
   end
 end
