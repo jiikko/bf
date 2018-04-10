@@ -102,7 +102,7 @@ module BF
       end
     end
 
-    def cancel_order
+    def cancel_order!
       api_client.cancel_order(self.order_id)
       canceled!
     end
