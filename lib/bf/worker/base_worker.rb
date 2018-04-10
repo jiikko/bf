@@ -4,7 +4,7 @@ module BF
       new.perform(*args)
     end
 
-    def self.async_perform(*args)
+    def self.perform_async(*args)
       @queue = :normal
       Resque.enqueue(self, *args)
     end

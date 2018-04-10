@@ -34,7 +34,7 @@ module BF
         update!(error_trace: e.inspect, status: :error)
         return self
       end
-      SellingTradeWorker.async_perform(self.id)
+      SellingTradeWorker.perform_async(self.id)
       self
     end
 
