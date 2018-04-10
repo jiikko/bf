@@ -18,7 +18,7 @@ module BF
     def db_connect!
       database_yml = File.expand_path('../../../database.yml', __FILE__)
       ActiveRecord::Base.configurations = YAML.load_file(database_yml)
-      ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), '../../debug.log'))
+      ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), '../../log/test.log'))
       ActiveRecord::Base.establish_connection(:mysql)
       unless ENV['RUN_ENV'] == 'resque'
         ActiveRecord::Migrator.migrate(File.expand_path('../../../db/migrate', __FILE__))

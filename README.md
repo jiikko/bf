@@ -29,7 +29,6 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## TODO
 * 連続して取得できていることを可視化したい
-* queue、normalしか用意してないけど処理によっては他のqueueも用意する
 * 取引所のステータスをDBにいれる(いまレディス)
   * 30分以内に負荷が高いと注文を入れない、という機能をいれたい(注文が遅れるとつらい)
 * redis のワーニングをけす

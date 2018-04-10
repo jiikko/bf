@@ -27,9 +27,9 @@ module BF
     def logger
       @logger ||=
         if ENV['RUN_ENV'] == 'test'
-          Logger.new("log_test.log")
+          Logger.new("log/test.log")
         else
-          Logger.new("log_development.log")
+          Logger.new("log/development.log")
         end
     end
 
