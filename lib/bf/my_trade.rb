@@ -27,13 +27,13 @@ module BF
       target_price ||= api_client.min_price_by_current_range
       update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy)
       begin
+        create_sell_trade!
         order_id = api_client.buy(target_price, order_size) # まだ約定していない
         update!(order_id: order_id, status: :requested)
       rescue => e
         update!(error_trace: e.inspect, status: :error)
         return self
       end
-      create_sell_trade!
       SellingTradeWorker.async_perform(self.id)
       self
     end
@@ -61,6 +61,10 @@ module BF
       @client ||= BF::Client.new
     end
 
+    def get_order
+      BF::Client.new.get_order(order_id)
+    end
+
     def trade_status_of_server?
       current_status = BF::Client.new.get_order(self.order_id)
       case current_status
@@ -76,27 +80,25 @@ module BF
     end
 
     def waiting_to_sell
-      begin
-        Timeout.timeout(15.minutes) do
-          loop do
-            if trade_status_of_server?
-              succeed!
-              break
-            end
-            if canceled?
-              BF.logger.info "買い注文をポーリングしていましたが#{status}だったので中止しました。売り注文を出していません。"
-              sell_trade.canceled_before_request!
-              return
-            end
-            sleep(1)
-          end
+      loop do
+        self.reload
+        if created_at.localtime < 15.minutes.ago
+          BF.logger.info "買いポーリングしていましたがタイムアウトです。買い注文をキャンセルします。売り注文は出していません。"
+          api_client.cancel_order(self.order_id)
+          sell_trade.canceled_before_request!
+          timeout_before_request!
+          return
         end
-      rescue Timeout::Error => e
-        BF.logger.info "買いをポーリングしていましたがタイムアウトです。買い注文をキャンセルします。売り注文を出していません。"
-        api_client.cancel_order(self.order_id)
-        sell_trade.canceled_before_request!
-        timeout_before_request!
-        return
+        if trade_status_of_server?
+          succeed!
+          break
+        end
+        if canceled?
+          BF.logger.info "買い注文をポーリングしていましたが#{status}だったので中止しました。売り注文を出していません。"
+          sell_trade.canceled_before_request!
+          return
+        end
+        sleep(1)
       end
     end
 

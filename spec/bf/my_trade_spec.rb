@@ -12,14 +12,14 @@ RSpec.describe BF::MyTrade do
         allow_any_instance_of(BF::Client).to receive(:buy) { raise }
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         expect(buy_trade.error?).to eq(true)
-        expect(buy_trade.sell_trade).to eq(nil)
+        expect(buy_trade.sell_trade).to be_a(BF::MyTrade)
         expect(ResqueSpec.queues['normal'].size).to eq(0)
       end
     end
     context '買いの約定待ちがタイムアウトを迎えた時' do
       it '買い売り注文を売り出さずにキャンセルステータスにする' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
-        allow_any_instance_of(BF::MyTrade).to receive(:trade_status_of_server?) { raise(Timeout::Error) }
+        allow_any_instance_of(BF::MyTrade).to receive(:created_at) { 16.minutes.ago }
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         ResqueSpec.run!('normal')
         expect(buy_trade.reload.timeout_before_request?).to eq(true)

@@ -137,9 +137,6 @@ module BF
       rescue Timeout::Error
         sleep(5)
         retry
-      rescue Timeout::Error
-        sleep(5)
-        retry
       end
       JSON.parse(body)
     end
