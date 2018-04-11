@@ -162,7 +162,11 @@ module BF
     end
 
     def cancel_order(order_acceptance_id)
-      CancelRequest.new.run(order_acceptance_id)
+      begin
+        CancelRequest.new.run(order_acceptance_id)
+      rescue RuntimeError => e
+        BF.logger.info e.inspect
+      end
     end
   end
 end
