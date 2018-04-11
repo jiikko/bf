@@ -18,7 +18,7 @@ module BF
     has_one :sell_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :sell_trade
     has_one :buy_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :buy_trade
 
-    def find_by_sell(trade_id)
+    def self.find_by_sell(trade_id)
       BF::MyTrade.find_by(kind: :sell, id: trade_id)
     end
 
