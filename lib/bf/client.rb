@@ -93,7 +93,7 @@ module BF
     class CancelRequest < BaseRequest
       def run(order_acceptance_id)
         super(path: '/v1/me/cancelchildorder', http_class: Net::HTTP::Post) do |body|
-          body.merge({ order_acceptance_id: order_acceptance_id }).to_json
+          body.merge({ child_order_acceptance_id: order_acceptance_id }).to_json
         end
       end
     end
