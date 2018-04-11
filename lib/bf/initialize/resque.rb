@@ -1,4 +1,4 @@
-ENV['RUN_ENV'] = 'resque'
+ENV['RUN_ENV'] ||= 'resque'
 
 require "bundler/setup"
 require 'bf'

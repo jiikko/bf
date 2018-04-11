@@ -1,6 +1,7 @@
 module BF
   class CLI
     def self.run
+      ENV['RUN_ENV'] = 'cli'
       cli = new
       cli.db_connect!
       cli.start
