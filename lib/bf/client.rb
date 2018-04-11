@@ -102,6 +102,7 @@ module BF
       # order status
       # => 'ACTIVE', 'COMPLETED', 'CANCELED', 'EXPIRED', 'REJECTED'
       def run(order_id)
+        return if order_id.nil?
         response = super(path: "/v1/me/getchildorders",
                          http_class: Net::HTTP::Get,
                          query: "product_code=#{PROCUT_CODE}&child_order_acceptance_id=#{order_id}")
