@@ -108,7 +108,7 @@ module BF
         order_query = if order_id
                         "child_order_id=#{order_id}"
                       else
-                        "child_order_acceptance_id='#{order_acceptance_id}'"
+                        "child_order_acceptance_id=#{order_acceptance_id}"
                       end
         response = super(path: "/v1/me/getchildorders",
                          http_class: Net::HTTP::Get,
