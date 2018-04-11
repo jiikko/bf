@@ -4,14 +4,13 @@ module BF
       :waiting_to_request,
       :waiting_to_sell,
       :requested,
-      :requesting,
       :succeed,
       :failed,
       :timeout,
       :error,
       :canceled,
       :canceled_before_request,
-      :timeout_before_request,
+      :selling,
     ]
     enum kind: [:buy, :sell]
 
@@ -42,7 +41,7 @@ module BF
       return if canceled?
       begin
         order_acceptance_id = sell_trade.api_client.sell(sell_trade.price, sell_trade.order_size)
-        sell_trade.update!(order_acceptance_id: order_acceptance_id, status: :succeed)
+        sell_trade.update!(order_acceptance_id: order_acceptance_id, status: :selling)
       rescue => e
         sell_trade.update!(error_trace: e.inspect, status: :error)
       end
@@ -85,8 +84,8 @@ module BF
         if created_at.localtime < 15.minutes.ago
           BF.logger.info "買いポーリングしていましたがタイムアウトです。買い注文をキャンセルします。売り注文は出していません。"
           api_client.cancel_order(self.order_id)
+          timeout!
           sell_trade.canceled_before_request!
-          timeout_before_request!
           return
         end
         if trade_sccessd?

@@ -23,7 +23,7 @@ RSpec.describe BF::MyTrade do
         allow_any_instance_of(BF::MyTrade).to receive(:created_at) { 16.minutes.ago }
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         ResqueSpec.run!('normal')
-        expect(buy_trade.reload.timeout_before_request?).to eq(true)
+        expect(buy_trade.reload.timeout?).to eq(true)
         expect(buy_trade.sell_trade.canceled_before_request?).to eq(true)
       end
     end
@@ -89,7 +89,7 @@ RSpec.describe BF::MyTrade do
           expect(ResqueSpec.queues['normal'].map { |x| x[:class] }).to eq([ "BF::SellingTradeWorker"])
           ResqueSpec.run!('normal')
           expect(buy_trade.reload.succeed?).to eq(true)
-          expect(buy_trade.sell_trade.succeed?).to eq(true)
+          expect(buy_trade.sell_trade.selling?).to eq(true)
           expect(buy_trade.order_acceptance_id).to eq('1')
           expect(buy_trade.order_id).to eq(nil)
           expect(buy_trade.sell_trade.order_id).to eq(nil)
