@@ -64,9 +64,9 @@ module BF
     def get_order_status
       case
       when order_id
-        BF::Client.new.get_order(order_id: order_id)['child_order_state']
+        api_client.get_order(order_id: order_id)['child_order_state']
       when order_acceptance_id
-        response = BF::Client.new.get_order(order_acceptance_id: order_acceptance_id)
+        response = api_client.get_order(order_acceptance_id: order_acceptance_id)
         set_order_id!(response && response['child_order_id'])
         response && response['child_order_state']
       else

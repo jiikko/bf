@@ -7,7 +7,7 @@ RSpec.describe BF::MyTrade do
 
   describe '.run_buy_trade!' do
     context "client.buyでエラーが起きた時" do
-      it "sell_tradeは作らないこと" do
+      it "sell_tradeを作ること" do
         allow_any_instance_of(BF::SellingTradeWorker).to receive(:perform)
         allow_any_instance_of(BF::Client).to receive(:buy) { raise }
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
@@ -77,6 +77,7 @@ RSpec.describe BF::MyTrade do
           allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
           allow_any_instance_of(BF::MyTrade).to receive(:trade_status_of_server?).and_return(true)
           buy_trade = BF::MyTrade.new.run_buy_trade!(300)
+          expect(buy_trade.order_acceptance_id).to eq('1')
           ResqueSpec.run!('normal')
           expect(buy_trade.reload.succeed?).to eq(true)
         end
@@ -94,7 +95,6 @@ RSpec.describe BF::MyTrade do
           expect(buy_trade.sell_trade.order_id).to eq(nil)
           expect(buy_trade.sell_trade.order_acceptance_id).not_to eq(nil)
         end
-
         context "client.sellでエラーが起きた時" do
           it 'sell_trade.status が error になること' do
             allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
@@ -106,6 +106,42 @@ RSpec.describe BF::MyTrade do
             expect(buy_trade.sell_trade.error?).to eq(true)
           end
         end
+      end
+    end
+  end
+  describe '#get_order_status' do
+    context 'order_id を持っている時' do
+      it 'order_id で検索すること' do
+        buy_trade = BF::MyTrade.new(kind: :buy, order_id: '1')
+        api_client = double(:api_client)
+        allow(api_client).to receive(:get_order).with(order_id: '1').once do
+          { 'child_order_state' => 'COMPLETED' }
+        end
+        allow(buy_trade).to receive(:api_client).and_return(api_client)
+        expect(buy_trade.get_order_status).to eq('COMPLETED')
+      end
+    end
+    context 'order_acceptance_id と order_id の両方を持っている時' do
+      it 'order_idで検索すること' do
+        buy_trade = BF::MyTrade.new(kind: :buy, order_id: '1', order_acceptance_id: '2')
+        api_client = double(:api_client)
+        allow(api_client).to receive(:get_order).with(order_id: '1').once do
+          { 'child_order_state' => 'COMPLETED' }
+        end
+        allow(buy_trade).to receive(:api_client).and_return(api_client)
+        expect(buy_trade.get_order_status).to eq('COMPLETED')
+      end
+    end
+    context 'order_acceptance_id のみを持っている時' do
+      it 'order_acceptance_id で検索して、order_idをセットすること' do
+        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 0, size: 0)
+        api_client = double(:api_client)
+        allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
+          { 'child_order_state' => 'COMPLETED', 'child_order_id' => '1' }
+        end
+        allow(buy_trade).to receive(:api_client).and_return(api_client)
+        expect(buy_trade.get_order_status).to eq('COMPLETED')
+        expect(buy_trade.order_id).to eq('1')
       end
     end
   end
