@@ -85,7 +85,7 @@ module BF
         self.reload
         if created_at.localtime < 15.minutes.ago
           BF.logger.info "買いポーリングしていましたがタイムアウトです。買い注文をキャンセルします。売り注文は出していません。"
-          api_client.cancel_order(self.order_id)
+          api_client.cancel_order(self.order_acceptance_id)
           timeout!
           sell_trade.canceled_before_request!
           return
