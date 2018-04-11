@@ -61,30 +61,16 @@ module BF
       @client ||= BF::Client.new
     end
 
-    def get_order_status
+    def trade_sccessd?
       case
       when order_id
-        api_client.get_order(order_id: order_id)['child_order_state']
+        api_client.get_order(order_id: order_id).present?
       when order_acceptance_id
         response = api_client.get_order(order_acceptance_id: order_acceptance_id)
         set_order_id!(response && response['child_order_id'])
-        response && response['child_order_state']
+        response.present?
       else
         raise('order, order_acceptance_id の両方がありません')
-      end
-    end
-
-    def trade_status_of_server?
-      current_status = get_order_status
-      case current_status
-      when 'COMPLETED'
-        true
-      when 'ACTIVE'
-        false
-      when nil # 注文した直後だとnil がくる
-        false
-      else # 'CANCELED', 'EXPIRED', 'REJECTED' が返ってくるのは想定外
-        raise("エラー。買い注文の約低待ち中に 買い注文のステータスが #{current_status} が返ってきました。")
       end
     end
 
@@ -103,7 +89,8 @@ module BF
           timeout_before_request!
           return
         end
-        if trade_status_of_server?
+        if trade_sccessd?
+          BF::logger.info '約定を確認しました。これから売りを発注します。'
           succeed!
           break
         end

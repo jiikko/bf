@@ -31,7 +31,7 @@ RSpec.describe BF::MyTrade do
       it '買い売り注文を売り出さずにキャンセルステータスにする' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
         # 約定待ちになってほしいのでACTIVEを返す
-        allow_any_instance_of(BF::Client).to receive(:get_order).and_return('ACTIVE')
+        allow_any_instance_of(BF::Client).to receive(:get_order).and_return(nil)
         allow_any_instance_of(BF::MyTrade).to receive(:canceled?) { true }
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         ResqueSpec.run!('normal')
@@ -75,7 +75,7 @@ RSpec.describe BF::MyTrade do
       context '買い注文が約定した時' do
         it 'buy_trade.succeed! になること' do
           allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
-          allow_any_instance_of(BF::MyTrade).to receive(:trade_status_of_server?).and_return(true)
+          allow_any_instance_of(BF::MyTrade).to receive(:trade_sccessd?).and_return(true)
           buy_trade = BF::MyTrade.new.run_buy_trade!(300)
           expect(buy_trade.order_acceptance_id).to eq('1')
           ResqueSpec.run!('normal')
@@ -84,7 +84,7 @@ RSpec.describe BF::MyTrade do
         it '売りを発注すること(run_sell_trade!)' do
           allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
           allow_any_instance_of(BF::Client).to receive(:sell).and_return(1)
-          allow_any_instance_of(BF::MyTrade).to receive(:trade_status_of_server?).and_return(true)
+          allow_any_instance_of(BF::MyTrade).to receive(:trade_sccessd?).and_return(true)
           buy_trade = BF::MyTrade.new.run_buy_trade!(300)
           expect(ResqueSpec.queues['normal'].map { |x| x[:class] }).to eq([ "BF::SellingTradeWorker"])
           ResqueSpec.run!('normal')
@@ -99,7 +99,7 @@ RSpec.describe BF::MyTrade do
           it 'sell_trade.status が error になること' do
             allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
             allow_any_instance_of(BF::Client).to receive(:sell) { raise('Timeout::Error') }
-            allow_any_instance_of(BF::MyTrade).to receive(:trade_status_of_server?).and_return(true)
+            allow_any_instance_of(BF::MyTrade).to receive(:trade_sccessd?).and_return(true)
             buy_trade = BF::MyTrade.new.run_buy_trade!(300)
             ResqueSpec.run!('normal')
             expect(buy_trade.reload.succeed?).to eq(true)
@@ -109,7 +109,7 @@ RSpec.describe BF::MyTrade do
       end
     end
   end
-  describe '#get_order_status' do
+  describe '#trade_sccessd?' do
     context 'order_id を持っている時' do
       it 'order_id で検索すること' do
         buy_trade = BF::MyTrade.new(kind: :buy, order_id: '1')
@@ -118,7 +118,7 @@ RSpec.describe BF::MyTrade do
           { 'child_order_state' => 'COMPLETED' }
         end
         allow(buy_trade).to receive(:api_client).and_return(api_client)
-        expect(buy_trade.get_order_status).to eq('COMPLETED')
+        expect(buy_trade.trade_sccessd?).to eq(true)
       end
     end
     context 'order_acceptance_id と order_id の両方を持っている時' do
@@ -129,7 +129,7 @@ RSpec.describe BF::MyTrade do
           { 'child_order_state' => 'COMPLETED' }
         end
         allow(buy_trade).to receive(:api_client).and_return(api_client)
-        expect(buy_trade.get_order_status).to eq('COMPLETED')
+        expect(buy_trade.trade_sccessd?).to eq(true)
       end
     end
     context 'order_acceptance_id のみを持っている時' do
@@ -140,7 +140,7 @@ RSpec.describe BF::MyTrade do
           { 'child_order_state' => 'COMPLETED', 'child_order_id' => '1' }
         end
         allow(buy_trade).to receive(:api_client).and_return(api_client)
-        expect(buy_trade.get_order_status).to eq('COMPLETED')
+        expect(buy_trade.trade_sccessd?).to eq(true)
         expect(buy_trade.order_id).to eq('1')
       end
     end
