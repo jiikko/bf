@@ -19,7 +19,7 @@ module BF
     has_one :buy_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :buy_trade
 
     def find_by_sell(trade_id)
-      BF::MyTrade.find_by(kind: :sell, id: sell_trade_id)
+      BF::MyTrade.find_by(kind: :sell, id: trade_id)
     end
 
     def run_buy_trade!(target_price=nil)
@@ -44,7 +44,9 @@ module BF
         sell_trade.update!(order_acceptance_id: order_acceptance_id, status: :selling)
       rescue => e
         sell_trade.update!(error_trace: e.inspect, status: :error)
+        return sell_trade
       end
+      OrderWaitingWorker.perform_async(sell_trade.id)
     end
 
     # TODO
