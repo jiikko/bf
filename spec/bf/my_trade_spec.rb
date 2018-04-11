@@ -19,6 +19,7 @@ RSpec.describe BF::MyTrade do
     context '買いの約定待ちがタイムアウトを迎えた時' do
       it '買い売り注文を売り出さずにキャンセルステータスにする' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
+        allow_any_instance_of(BF::Client).to receive(:cancel_order)
         allow_any_instance_of(BF::MyTrade).to receive(:created_at) { 16.minutes.ago }
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         ResqueSpec.run!('normal')
@@ -88,8 +89,10 @@ RSpec.describe BF::MyTrade do
           ResqueSpec.run!('normal')
           expect(buy_trade.reload.succeed?).to eq(true)
           expect(buy_trade.sell_trade.succeed?).to eq(true)
-          expect(buy_trade.order_id).to_not eq(nil)
-          expect(buy_trade.sell_trade.order_id).to_not eq(nil)
+          expect(buy_trade.order_acceptance_id).to eq('1')
+          expect(buy_trade.order_id).to eq(nil)
+          expect(buy_trade.sell_trade.order_id).to eq(nil)
+          expect(buy_trade.sell_trade.order_acceptance_id).not_to eq(nil)
         end
 
         context "client.sellでエラーが起きた時" do

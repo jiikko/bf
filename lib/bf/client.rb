@@ -91,9 +91,9 @@ module BF
     end
 
     class CancelRequest < BaseRequest
-      def run(order_id)
+      def run(order_acceptance_id)
         super(path: '/v1/me/cancelchildorder', http_class: Net::HTTP::Post) do |body|
-          body.merge(child_order_acceptance_id: order_id).to_json
+          body.merge({ order_acceptance_id: order_acceptance_id }).to_json
         end
       end
     end
@@ -101,13 +101,20 @@ module BF
     class GetOrderRequest < BaseRequest
       # order status
       # => 'ACTIVE', 'COMPLETED', 'CANCELED', 'EXPIRED', 'REJECTED'
-      def run(order_id)
-        return if order_id.nil?
+      def run(order_id: nil, order_acceptance_id: nil)
+        if order_id.nil? && order_acceptance_id.nil?
+          raise 'order_acceptance_id と order_id の両方ありません'
+        end
+        order_query = if order_id
+                        "child_order_id=#{order_id}"
+                      else
+                        "child_order_acceptance_id='#{order_acceptance_id}'"
+                      end
         response = super(path: "/v1/me/getchildorders",
                          http_class: Net::HTTP::Get,
-                         query: "product_code=#{PROCUT_CODE}&child_order_acceptance_id=#{order_id}")
+                         query: "product_code=#{PROCUT_CODE}&#{order_query}")
         order = response.first
-        order['child_order_state'] if order.present?
+        order.slice('child_order_state', 'child_order_acceptance_id', 'child_order_id') if order.present?
       end
 
       def http_method
@@ -150,12 +157,12 @@ module BF
       SellRequest.new.run(price, size)
     end
 
-    def get_order(order_id)
-      GetOrderRequest.new.run(order_id)
+    def get_order(order_id: nil, order_acceptance_id: nil)
+      GetOrderRequest.new.run(order_id: order_id, order_acceptance_id: order_acceptance_id)
     end
 
-    def cancel_order(order_id)
-      CancelRequest.new.run(order_id)
+    def cancel_order(order_acceptance_id)
+      CancelRequest.new.run(order_acceptance_id)
     end
   end
 end

@@ -28,8 +28,8 @@ module BF
       update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy)
       begin
         create_sell_trade!
-        order_id = api_client.buy(target_price, order_size) # まだ約定していない
-        update!(order_id: order_id, status: :requested)
+        order_acceptance_id = api_client.buy(target_price, order_size) # まだ約定していない
+        update!(order_acceptance_id: order_acceptance_id, status: :requested)
       rescue => e
         update!(error_trace: e.inspect, status: :error)
         return self
@@ -41,8 +41,8 @@ module BF
     def run_sell_trade!
       return if canceled?
       begin
-        order_id = sell_trade.api_client.sell(sell_trade.price, sell_trade.order_size)
-        sell_trade.update!(order_id: order_id, status: :succeed)
+        order_acceptance_id = sell_trade.api_client.sell(sell_trade.price, sell_trade.order_size)
+        sell_trade.update!(order_acceptance_id: order_acceptance_id, status: :succeed)
       rescue => e
         sell_trade.update!(error_trace: e.inspect, status: :error)
       end
@@ -61,12 +61,21 @@ module BF
       @client ||= BF::Client.new
     end
 
-    def get_order
-      BF::Client.new.get_order(order_id)
+    def get_order_status
+      case
+      when order_id
+        BF::Client.new.get_order(order_id: order_id)['child_order_state']
+      when order_acceptance_id
+        response = BF::Client.new.get_order(order_acceptance_id: order_acceptance_id)
+        set_order_id!(response && response['child_order_id'])
+        response && response['child_order_state']
+      else
+        raise('order, order_acceptance_id の両方がありません')
+      end
     end
 
     def trade_status_of_server?
-      current_status = BF::Client.new.get_order(self.order_id)
+      current_status = get_order_status
       case current_status
       when 'COMPLETED'
         true
@@ -77,6 +86,11 @@ module BF
       else # 'CANCELED', 'EXPIRED', 'REJECTED' が返ってくるのは想定外
         raise("エラー。買い注文の約低待ち中に 買い注文のステータスが #{current_status} が返ってきました。")
       end
+    end
+
+    def set_order_id!(order_id)
+      return if order_id.nil?
+      self.update!(order_id: order_id)
     end
 
     def waiting_to_sell
@@ -103,7 +117,7 @@ module BF
     end
 
     def cancel_order!
-      api_client.cancel_order(self.order_id)
+      api_client.cancel_order(self.order_acceptance_id)
       canceled!
     end
 
