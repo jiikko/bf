@@ -1,6 +1,10 @@
 module BF
   module ResqueHelper
     class << self
+      def jobs
+        Resque.redis.lrange('queue:normal', 0, 50)
+      end
+
       def clear_jobs
         result = []
         4.times do
