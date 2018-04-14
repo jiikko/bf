@@ -79,26 +79,19 @@ module BF
     end
 
     def self.price_table
-      ActiveRecord::Base.connection.enable_query_cache!
-      result = {
-        1 => minutely_range,
+      { 1 => minutely_range,
         5 => five_minutely_range,
-        10 => ten_minutely_range,
-        30 => half_hourly_range,
-        60 => hourly_range,
+       10 => ten_minutely_range,
+       30 => half_hourly_range,
+       60 => hourly_range,
       }
-      ActiveRecord::Base.connection.disable_query_cache!
-      result
     end
 
     private
 
     def self.calculate_range(from)
       raise('not found arg of from') if from.nil?
-      # 日付の検索条件は必要だけど都度古いレコードを削除しているので日付条件はなくてもよい
-      prices  = where(kind: :minutely).
-        pluck(:created_at, :price).
-        map { |created_at, price| created_at > from ? price : nil }.compact
+      prices = where(kind: :minutely, created_at: (from..Time.now)).pluck(:price)
       deviation_value_table = {}
       return [0, 0] if prices.empty?
       mean = prices.sum / prices.size
