@@ -1,6 +1,6 @@
 module BF
   class ScalpingWorker < BaseWorker
-    def perform(buy_trade_id)
+    def perform
       scalping = BF::Scalping.new
       loop do
         if scalping.scalp
