@@ -22,6 +22,10 @@ module BF
       BF::MyTrade.find_by(kind: :sell, id: trade_id)
     end
 
+    def self.tries_count
+      10
+    end
+
     def run_buy_trade!(target_price=nil)
       target_price ||= api_client.min_price_by_current_range
       update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy)
@@ -40,7 +44,10 @@ module BF
     def run_sell_trade!
       return if canceled?
       begin
-        order_acceptance_id = sell_trade.api_client.sell(sell_trade.price, sell_trade.order_size)
+        order_acceptance_id = nil
+        Retryable.retryable(tries: self.class.tries_count) do
+          order_acceptance_id = sell_trade.api_client.sell(sell_trade.price, sell_trade.order_size)
+        end
         sell_trade.update!(order_acceptance_id: order_acceptance_id, status: :selling)
       rescue => e
         sell_trade.update!(error_trace: e.inspect, status: :error)

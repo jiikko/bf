@@ -2,8 +2,9 @@ PATH
   remote: .
   specs:
     bf (0.1.0)
-      activerecord (>= 5.0)
+      activerecord (= 5.1.6)
       resque (< 4)
+      retryable
 
 GEM
   remote: https://rubygems.org/
@@ -30,7 +31,7 @@ GEM
     mono_logger (1.1.0)
     multi_json (1.13.1)
     mustermann (1.0.2)
-    mysql2 (0.3.18)
+    mysql2 (0.5.1)
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
@@ -52,6 +53,7 @@ GEM
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
       rspec-mocks (>= 3.0.0)
+    retryable (3.0.1)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
       rspec-expectations (~> 3.7.0)
@@ -84,7 +86,7 @@ PLATFORMS
 DEPENDENCIES
   bf!
   bundler (~> 1.16)
-  mysql2 (>= 0.3.18)
+  mysql2 (>= 0.4.4)
   pry
   rake (~> 10.0)
   resque_spec

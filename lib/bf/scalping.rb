@@ -30,8 +30,6 @@ module BF
 
     private
 
-    def waiting
-
     # 1分足で一番下にいること
     def is_in_low_range?
       last_price = BF::Trade.last.price

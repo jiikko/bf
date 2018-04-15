@@ -3,6 +3,7 @@ require 'bf/engine'
 require "logger"
 require "active_record"
 require "mysql2"
+require "retryable"
 require "resque"
 require "bf/version"
 require "bf/monitor"

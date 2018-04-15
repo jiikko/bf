@@ -76,6 +76,7 @@ RSpec.describe BF::MyTrade do
         it 'buy_trade.succeed! になること' do
           allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
           allow_any_instance_of(BF::MyTrade).to receive(:trade_sccessd?).and_return(true)
+          allow(BF::MyTrade).to receive(:tries_count).and_return(1)
           buy_trade = BF::MyTrade.new.run_buy_trade!(300)
           expect(buy_trade.order_acceptance_id).to eq('1')
           ResqueSpec.run!('normal')
@@ -98,6 +99,7 @@ RSpec.describe BF::MyTrade do
         context "client.sellでエラーが起きた時" do
           it 'sell_trade.status が error になること' do
             allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
+            allow(BF::MyTrade).to receive(:tries_count).and_return(1)
             allow_any_instance_of(BF::Client).to receive(:sell) { raise('Timeout::Error') }
             allow_any_instance_of(BF::MyTrade).to receive(:trade_sccessd?).and_return(true)
             buy_trade = BF::MyTrade.new.run_buy_trade!(300)
