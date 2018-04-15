@@ -33,14 +33,10 @@ The gem is available as open source under the terms of the [MIT License](https:/
   * 30分以内に負荷が高いと注文を入れない、という機能をいれたい(注文が遅れるとつらい)
 * redis のワーニングをけす
   * `The client method is deprecated as of redis-rb 4.0.0, please use the new _clientmethod instead. Support for the old method will be removed in redis-namespace 2.0.`
-* 公式からキャンセルするとorder_idでとれなくなるので、一度order_idをとったらステータスを変えて、以降ステータスがとれなくなったら削除された、と判断するよう修正する
-* 売りが失敗した場合retryをしたい
 * ログ出力への出力もしつつ、ログテーブルにも出力したい
   * 買いが失敗した旨のログとか、アクションが必要な旨のログも見れるようにする
 * タイムアウトを迎えて注文をキャンセルする時は、最終取引価格が近い時はキャンセルをしない
   * キャンセル注文と送った直後に成約すると売り注文が走らなくなるため
-* 売り時に注文エラーになってもリトライをしていないので買いっぱなしになる
-  * リトライして、リトライをしてもだめな旨を緊急的な通知煮出す
 
 ## 買い注文を入れるロジック
 * 上上上上
