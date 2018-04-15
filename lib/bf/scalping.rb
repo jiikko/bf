@@ -1,23 +1,23 @@
 module BF
   class Scalping
-    def scalp(dry_run=true)
+    def scalp(dry_run=false)
       @price_table = BF::Trade.price_table
       unless store_status_ok?
-        BF.logger.info 'サーバに負荷がかかっているので中止しました'
+        BF.logger.debug 'サーバに負荷がかかっているので中止しました'
         return false
       end
       unless under_1000?
-        BF.logger.info '1で値幅が1000以上あるので中止しました'
+        BF.logger.debug '1で値幅が1000以上あるので中止しました'
         return false
       end
       unless good_price_detection?
-        BF.logger.info '^下上 以外だったので中止しました'
+        BF.logger.debug '^下上 以外だったので中止しました'
         /^下上/
         return false
       end
 
       unless is_in_low_range?
-        BF.logger.info '1分足で高値なので中止しました'
+        BF.logger.debug '1分足で高値なので中止しました'
         return false
       end
 
