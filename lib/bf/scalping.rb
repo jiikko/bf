@@ -23,7 +23,7 @@ module BF
 
       BF.logger.info '注文しましょう！'
       unless dry_run
-        BF::MyTrade.newrun_buy_trade!(BF::Trade.last.price)
+        BF::MyTrade.new.run_buy_trade!(BF::Trade.last.price)
       end
       return true
     end
