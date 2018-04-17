@@ -53,7 +53,7 @@ module BF
       min = minutes1[0]
       max = minutes1[1]
       diff = max - min
-      diff < 1000
+      (400..1000).include?(diff)
     end
 
     def good_price_detection?
