@@ -16,6 +16,7 @@ module BF
         self.perform_async(*args)
       else
         BF.logger.info "#{self.inspect}(#{args}) で想定外の例外を検出しました。何もしていません。"
+        BF.logger.info e.message
       end
     end
   end
