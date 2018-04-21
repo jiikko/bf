@@ -139,14 +139,17 @@ module BF
       body = nil
       begin
         body = https.start { |https| response = https.get(pt) }.body
+        return JSON.parse(body)
       rescue OpenSSL::SSL::SSLError, Net::HTTPBadResponse, Errno::ECONNRESET, Errno::ETIMEDOUT, Errno::EHOSTUNREACH, SocketError => e
         sleep(5)
         retry
+      rescue JSON::ParserError
+        sleep(3)
+        retry # メンテナンス中だとHTMLが返ってきてparseが失敗するので
       rescue Timeout::Error
         sleep(5)
         retry
       end
-      JSON.parse(body)
     end
 
     def buy(price, size)
