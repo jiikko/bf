@@ -16,6 +16,14 @@ module BF
       def record
         BF::Setting.first || BF::Setting.create!
       end
+
+      def enabled_daemon_sclping_worker
+        record.enabled_daemon_sclping_worker
+      end
+
+      def toggle_enabled_daemon_sclping_worker!
+        record.toggle(:enabled_daemon_sclping_worker)
+      end
     end
   end
 end

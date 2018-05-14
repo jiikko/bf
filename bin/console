@@ -12,5 +12,6 @@ require "pp"
 # Pry.start
 
 require "irb"
+ENV['RUN_ENV'] = 'cli'
 BF::CLI.new.db_connect!
 IRB.start(__FILE__)

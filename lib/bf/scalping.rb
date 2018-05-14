@@ -2,6 +2,18 @@ module BF
   class Scalping
     def scalp(dry_run=false)
       @price_table = BF::Trade.price_table
+
+      if validate && !dry_run
+        BF.logger.info '注文しましょう！'
+        buy_trade = BF::MyTrade.new.run_buy_trade!(BF::Trade.last.price)
+        ScalpingTask.create!(trade_ship_id: buy_trade.trade_ship.id)
+        return true
+      end
+    end
+
+    private
+
+    def validate
       unless store_status_ok?
         BF.logger.debug 'サーバに負荷がかかっているので中止しました'
         return false
@@ -20,15 +32,8 @@ module BF
         BF.logger.debug '1分足で高値なので中止しました'
         return false
       end
-
-      BF.logger.info '注文しましょう！'
-      unless dry_run
-        BF::MyTrade.new.run_buy_trade!(BF::Trade.last.price)
-      end
       return true
     end
-
-    private
 
     # 1分足で一番下にいること
     def is_in_low_range?
