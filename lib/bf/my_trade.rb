@@ -12,6 +12,13 @@ module BF
       :canceled_before_request,
       :selling,
     ]
+    RUNNING_STATUS_FOR_BUY = [
+      :waiting_to_request, :requested,
+    ]
+    RUNNING_STATUS_FOR_SELL = [
+      :waiting_to_sell, :selling,
+    ]
+
     enum kind: [:buy, :sell]
 
     has_one :trade_ship, class_name: 'BF::MyTradeShip', foreign_key: :buy_trade_id, dependent: :destroy
@@ -89,7 +96,7 @@ module BF
       self.update!(order_id: order_id)
     end
 
-    def waiting_to_sell
+    def wait_to_sell
       loop do
         self.reload
         if created_at.localtime < 15.minutes.ago
