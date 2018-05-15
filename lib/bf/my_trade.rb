@@ -120,6 +120,10 @@ module BF
       sell_trade.canceled_before_request!
     end
 
+   def get_order
+     api_client.get_order(order_id: order_id)
+   end
+
     private
 
     def create_sell_trade!
