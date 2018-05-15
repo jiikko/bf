@@ -13,7 +13,12 @@ module BF
           else
             'bf_config.yaml'
           end
-        @config = YAML.load(File.open(path))
+        @config =
+          if ENV['RUN_ENV'] == 'test'
+            {"api_key" => "2", "api_secret" => "N"}
+          else
+            YAML.load(File.open(path))
+          end
       end
 
       def api_key

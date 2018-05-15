@@ -63,6 +63,11 @@ RSpec.describe BF::MyTrade do
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         expect(ResqueSpec.queues['normal'].size).to eq(1)
         expect(buy_trade.sell_trade.waiting_to_sell?).to eq(true)
+
+        allow_any_instance_of(Net::HTTP).to receive(:request) do
+          sleep(2)
+        end
+
         begin
           Timeout.timeout(1) do
             ResqueSpec.run!('normal')
