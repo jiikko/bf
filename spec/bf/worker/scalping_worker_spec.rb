@@ -18,7 +18,6 @@ RSpec.describe BF::ScalpingWorker do
       end
     end
 
-
     context 'diff args and queued BF::ScalpingWorker ' do
       it 'return false' do
         BF::ScalpingWorker.perform_async("from" => 'hoge')
