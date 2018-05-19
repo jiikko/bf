@@ -71,7 +71,7 @@ module BF
     end
 
     def order_size
-      0.005
+      0.01
     end
 
     def api_client
