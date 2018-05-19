@@ -48,7 +48,7 @@ RSpec.describe BF::Client do
     it do
       result = nil
       begin
-        result = BF::Client.get_state.keys.sort
+        result = BF::Client.new.get_state.keys.sort
       rescue => e
         skip "オフラインの可能性があります(#{})"
       end

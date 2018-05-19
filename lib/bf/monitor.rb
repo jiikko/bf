@@ -36,7 +36,7 @@ module BF
     end
 
     def current_status
-      state = BF::Client.get_state
+      state = BF::Client.new.get_state
       state.each do |key, value|
         state[key] = self.class.state_const[key][value]
       end
