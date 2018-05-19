@@ -127,6 +127,7 @@ module BF
       end
     end
 
+    # for public api
     class << self
       def get_state
         new.get("/v1/getboardstate", PROCUT_CODE)
@@ -145,7 +146,7 @@ module BF
       begin
         body = https.start { |https| response = https.get(pt) }.body
         return JSON.parse(body)
-      rescue OpenSSL::SSL::SSLError, Net::HTTPBadResponse, Errno::ECONNRESET, Errno::ETIMEDOUT, Errno::EHOSTUNREACH, SocketError => e
+      rescue OpenSSL::SSL::SSLError, Net::HTTPBadResponse, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ETIMEDOUT, Errno::EHOSTUNREACH, SocketError => e
         sleep(5)
         retry
       rescue JSON::ParserError
@@ -166,7 +167,13 @@ module BF
     end
 
     def get_order(order_id: nil, order_acceptance_id: nil)
-      GetOrderRequest.new.run(order_id: order_id, order_acceptance_id: order_acceptance_id)
+      begin
+        GetOrderRequest.new.run(order_id: order_id, order_acceptance_id: order_acceptance_id)
+      rescue OpenSSL::SSL::SSLError, Net::HTTPBadResponse, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ETIMEDOUT, Errno::EHOSTUNREACH, SocketError => e
+        BF.logger.error e.inspect
+        sleep(3)
+        retry
+      end
     end
 
     def cancel_order(order_acceptance_id)
@@ -174,6 +181,10 @@ module BF
         CancelRequest.new.run(order_acceptance_id)
       rescue RuntimeError => e
         BF.logger.info e.inspect
+      rescue OpenSSL::SSL::SSLError, Net::HTTPBadResponse, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ETIMEDOUT, Errno::EHOSTUNREACH, SocketError => e
+        BF.logger.info e.inspect
+        sleep(3)
+        retry
       end
     end
   end
