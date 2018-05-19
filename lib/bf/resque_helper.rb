@@ -1,7 +1,12 @@
 module BF
   module ResqueHelper
     class << self
+      def queueing?(name='normal', jobname, args)
+        # TODO
+      end
+
       def jobs
+        # or Resque.peek('normal', 0, 100)
         Resque.redis.lrange('queue:normal', 0, 50)
       end
 

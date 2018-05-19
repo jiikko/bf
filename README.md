@@ -47,3 +47,7 @@ The gem is available as open source under the terms of the [MIT License](https:/
 * 1,5,10で分散が一定値に収まるなら発注する
   * レンジで上下しているとみなす
 * 下上xx   かつ 最小差額(赤いバー)(独自指標) が0の時に1分足最小価格で発注する
+
+## Upgrate手順
+* テーブルに変更がある場合databaseをdropして作り直す
+  * migratioファイルのメンテしたくない
