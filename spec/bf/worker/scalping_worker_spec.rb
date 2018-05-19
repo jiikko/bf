@@ -20,10 +20,22 @@ RSpec.describe BF::ScalpingWorker do
 
 
     context 'diff args and queued BF::ScalpingWorker ' do
+      it 'return false' do
+        BF::ScalpingWorker.perform_async("from" => 'hoge')
+        expect(BF::ScalpingWorker.queueing?).to eq(false)
+      end
     end
 
     context 'nothing args and queued BF::ScalpingWorker ' do
       it 'return false' do
+        BF::ScalpingWorker.perform_async("from" => nil)
+        expect(BF::ScalpingWorker.queueing?).to eq(false)
+        BF::ScalpingWorker.perform_async("from" => [])
+        expect(BF::ScalpingWorker.queueing?).to eq(false)
+        BF::ScalpingWorker.perform_async("from" => '')
+        expect(BF::ScalpingWorker.queueing?).to eq(false)
+        BF::ScalpingWorker.perform_async("from" => {})
+        expect(BF::ScalpingWorker.queueing?).to eq(false)
       end
     end
   end

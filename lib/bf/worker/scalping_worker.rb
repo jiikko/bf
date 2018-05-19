@@ -15,7 +15,7 @@ module BF
         result = !!Resque.peek("normal", 0, 100).detect { |hash|
           /#{self.to_s}/ =~ hash['class'] &&
             hash['args'].first.is_a?(Hash) &&
-            unique_enqueued_class_regep =~ hash['args'].first['from']
+            unique_enqueued_class_regep =~ (hash['args'].first['from'].presence || '')
         } || false
         return result
 
