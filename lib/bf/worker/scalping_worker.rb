@@ -1,9 +1,8 @@
 module BF
   class ScalpingWorker < BaseWorker
     def perform(options = nil)
-      scalping = BF::Scalping.new
       loop do
-        if scalping.scalp
+        if BF::Scalping.new.scalp
           break
         end
         sleep(5)
@@ -11,13 +10,16 @@ module BF
     end
 
     class << self
+      def doing?
+        !!Resque.workers.detect do |worker|
+          worker.job.present? && check_payload?(worker.job['payload'])
+        end
+      end
+
       def queueing?
-        result = !!Resque.peek("normal", 0, 100).detect { |hash|
-          /#{self.to_s}/ =~ hash['class'] &&
-            hash['args'].first.is_a?(Hash) &&
-            unique_enqueued_class_regep =~ (hash['args'].first['from'].presence || '')
+        !!Resque.peek("normal", 0, 100).detect { |hash|
+          check_payload?(hash)
         } || false
-        return result
 
         # こうしたい
         # ResqueHelper.queueing?('normal',
@@ -26,6 +28,12 @@ module BF
       end
 
       private
+
+      def check_payload?(hash)
+        /#{self.to_s}/ =~ hash['class'] &&
+          hash['args'].first.is_a?(Hash) &&
+          unique_enqueued_class_regep =~ (hash['args'].first['from'].presence || '')
+      end
 
       def unique_enqueued_class_regep
         /DaemonScalpingWorker$/

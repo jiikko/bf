@@ -5,7 +5,6 @@ module BF
     # * 未完了(買い売り待ち)の取引がないこと
     # * キューにないこと
     def perform
-      scalping = BF::Scalping.new
       loop do
         unless BF::Setting.enabled_daemon_sclping_worker?
           sleep(5)
@@ -16,7 +15,7 @@ module BF
           next
         end
 
-        if BF::ScalpingWorker.queueing?
+        if BF::ScalpingWorker.queueing? || BF::ScalpingWorker.doing?
           sleep(5)
           next
         end
