@@ -29,13 +29,13 @@ module BF
 
     def get_state
       retry_with do
-        PublicApi.new.get_public_api("/v1/getboardstate", PROCUT_CODE)
+        PublicApi.new.get_public_api("/v1/getboardstate", PROCUT_CODE) || {}
       end
     end
 
     def get_ticker
       retry_with do
-        PublicApi.new.get_public_api("/v1/ticker", PROCUT_CODE)
+        PublicApi.new.get_public_api("/v1/ticker", PROCUT_CODE) || {}
       end
     end
 
@@ -44,7 +44,7 @@ module BF
     # postだと二重注文になる可能性があるので注文では使わない
     def retry_with
       begin
-        yield
+        return yield
       rescue RuntimeError => e
         BF.logger.info e.inspect
       rescue OpenSSL::SSL::SSLError,
@@ -60,7 +60,8 @@ module BF
       rescue JSON::ParserError
         sleep(3)
         retry # メンテナンス中だとHTMLが返ってきてparseが失敗するので
-      rescue Timeout::Error
+      rescue Timeout::Error, Net::OpenTimeout => e
+        BF.logger.info e.inspect
         sleep(5)
         retry
       end
