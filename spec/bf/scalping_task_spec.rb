@@ -48,4 +48,23 @@ RSpec.describe BF::ScalpingTask do
       end
     end
   end
+
+  describe '#running?' do
+    context '紐づくtrade_shipがない時' do
+      it 'return false' do
+        task = BF::ScalpingTask.new
+        expect(task.running?).to eq(false)
+        expect(task.status).to eq(1)
+      end
+    end
+
+    context '注文直後の取引がある時' do
+      it 'return true' do
+        buy_trade = BF::MyTrade.new.run_buy_trade!(10)
+        task = BF::ScalpingTask.create!(trade_ship_id: buy_trade.trade_ship.id)
+        expect(task.running?).to eq(true)
+        expect(task.status).to eq(3)
+      end
+    end
+  end
 end
