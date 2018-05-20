@@ -6,7 +6,7 @@ module BF
     has_one :scalping_task, foreign_key: :trade_ship_id
 
     def running?
-      buy_trade.running? && sell_trade.running?
+      buy_trade.running? || sell_trade.running?
     end
   end
 end
