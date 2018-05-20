@@ -11,6 +11,10 @@ module BF
     }
     RUNNING_STATUSES = [3, 4]
 
+    scope :running, ->{
+      joins(:trade_ship).merge(BF::MyTradeShip.running)
+    }
+
     def self.running?
       return true if BF::ScalpingTask.joins(trade_ship: :buy_trade).where(my_trades: { status: BF::MyTrade.statuses.slice(*BF::MyTrade::RUNNING_STATUS_FOR_BUY).values }).exists?
       return true if BF::ScalpingTask.joins(trade_ship: :sell_trade).where(my_trades: { status: BF::MyTrade.statuses.slice(*BF::MyTrade::RUNNING_STATUS_FOR_SELL).values }).exists?

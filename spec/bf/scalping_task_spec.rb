@@ -9,6 +9,20 @@ RSpec.describe BF::ScalpingTask do
     allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
   end
 
+  describe '.running' do
+    it 'return running record' do
+      buy_trade = BF::MyTrade.new.run_buy_trade!(10)
+      running_task = BF::ScalpingTask.create!(trade_ship_id: buy_trade.trade_ship.id)
+
+      buy_trade = BF::MyTrade.new.run_buy_trade!(10)
+      BF::ScalpingTask.create!(trade_ship_id: buy_trade.trade_ship.id)
+      buy_trade.succeed!
+      buy_trade.trade_ship.sell_trade.succeed!
+
+      expect(BF::ScalpingTask.running.ids).to eq([running_task.id])
+    end
+  end
+
   describe '.running?' do
     context '実行中ステータスのtaskがある時' do
       context '注文した直後の時' do
