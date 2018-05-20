@@ -10,6 +10,10 @@
 ```
 
 ## Installation
+```
+echo 'create database bf_cli_development' | mysql -uroot
+```
+
 ### Gemfile
 ```
 gem 'bf', github: 'jiikko/bf', branch: :master

@@ -7,6 +7,6 @@ Resque.redis.namespace = "resque:bf"
 Resque.logger = Logger.new('log/rescue.log')
 Resque.logger.level = Logger::INFO
 
-unless defined?(Rails)
+if (defined?(Rails).nil?) && (ENV['RUN_ENV'] == 'resque')
   BF::CLI.new.db_connect!
 end
