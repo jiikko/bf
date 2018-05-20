@@ -35,6 +35,15 @@ module BF
       10
     end
 
+    def running?
+      case kind.to_sym
+      when :buy
+        RUNNING_STATUS_FOR_BUY.include?(status.to_sym)
+      when :sell
+        RUNNING_STATUS_FOR_SELL.include?(status.to_sym)
+      end
+    end
+
     def run_buy_trade!(target_price=nil)
       target_price ||= api_client.min_price_by_current_range
       update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy)

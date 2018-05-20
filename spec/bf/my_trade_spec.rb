@@ -116,6 +116,15 @@ RSpec.describe BF::MyTrade do
       end
     end
   end
+
+  describe '#running?' do
+    it 'return true' do
+      expect(BF::MyTrade.new(kind: :buy, status: 'requested').running?).to eq(true)
+      expect(BF::MyTrade.new(kind: :sell, status: 'selling').running?).to eq(true)
+      expect(BF::MyTrade.new(kind: :sell, status: 'error').running?).to eq(false)
+    end
+  end
+
   describe '#trade_sccessd?' do
     context 'order_id を持っている時' do
       it 'order_id で検索すること' do
