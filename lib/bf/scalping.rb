@@ -43,7 +43,7 @@ module BF
     # 5%を超えると赤字
     def over_disparity?
       disparity = BF::Monitor.new.current_disparity_from_datastore
-      disparity > 4.5
+      disparity >= BF::STOP_DISPARITY_LIMIT
     end
 
     # 1分足で一番下にいること

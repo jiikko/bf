@@ -9,7 +9,7 @@ module BF
   class Client
     def buy(price, size)
       disparity = BF::Monitor.new.current_disparity_from_datastore
-      if disparity > 4.5
+      if disparity >= BF::STOP_DISPARITY_LIMIT
         raise(BF::DisparityOverError)
       end
 
