@@ -44,7 +44,7 @@ RSpec.describe BF::Client do
     end
   end
 
-  describe 'get_health' do
+  describe '#get_health' do
     it do
       result = nil
       begin
@@ -53,6 +53,13 @@ RSpec.describe BF::Client do
         skip "オフラインの可能性があります(#{})"
       end
       expect(result).to eq(['state', 'health'].sort)
+    end
+  end
+
+  describe '#get_disparity' do
+    it 'return disparity' do
+      result = BF::Client.new.get_disparity
+      expect(result).to be_a(Float)
     end
   end
 end
