@@ -1,5 +1,8 @@
 module BF
   class Monitor
+    FETCH_DISPARITY_KEY = 'current_disparity'
+    FETCH_STATUS_KEY    = 'BF::Monitor.current_status'
+
     def self.state_const
       { 'health' => {
           'NORMAL' => '取引所は稼動しています。',
@@ -27,8 +30,13 @@ module BF
       end
     end
 
+    # 乖離率を取得できない場合異常値を返す
+    def current_disparity_from_datastore
+      (Resque.redis.get(FETCH_DISPARITY_KEY) || 999).to_f
+    end
+
     def current_status_from_datastore
-      s = Redis.new.get('BF::Monitor.current_status')
+      s = Redis.new.get(FETCH_STATUS_KEY)
       if s
         JSON.parse(s)
       end
