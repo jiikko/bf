@@ -8,6 +8,11 @@ require 'bf/client/private_api'
 module BF
   class Client
     def buy(price, size)
+      disparity = BF::Monitor.new.current_disparity_from_datastore
+      if disparity > 4.5
+        raise(BF::DisparityOverError)
+      end
+
       BuyRequest.new.run(price, size)
     end
 

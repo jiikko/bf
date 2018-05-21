@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe BF::Client do
+  before(:each) do
+    Resque.redis.set(BF::Monitor::FETCH_DISPARITY_KEY, 0) # normalize
+  end
+
   describe '#buy' do
     it 'success' do
       allow_any_instance_of(Net::HTTP).to receive(:request) do

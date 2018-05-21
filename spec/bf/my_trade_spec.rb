@@ -6,6 +6,15 @@ RSpec.describe BF::MyTrade do
   end
 
   describe '.run_buy_trade!' do
+    context '乖離率が高い時' do
+      it '注文しないこと' do
+        Resque.redis.set(BF::Monitor::FETCH_DISPARITY_KEY, 5)
+        buy_trade = BF::MyTrade.new.run_buy_trade!(1)
+        expect(/DisparityOverError/ =~ buy_trade.error_trace).to be_a(Integer)
+        expect(buy_trade.status).to eq('error')
+      end
+    end
+
     context "client.buyでエラーが起きた時" do
       it "sell_tradeを作ること" do
         allow_any_instance_of(BF::SellingTradeWorker).to receive(:perform)

@@ -14,6 +14,11 @@ module BF
     private
 
     def validate
+      if over_disparity?
+        BF.logger.debug '乖離率が高いので中止しました'
+        return
+      end
+
       unless store_status_ok?
         BF.logger.debug 'サーバに負荷がかかっているので中止しました'
         return false
@@ -33,6 +38,12 @@ module BF
         return false
       end
       return true
+    end
+
+    # 5%を超えると赤字
+    def over_disparity?
+      disparity = BF::Monitor.new.current_disparity_from_datastore
+      disparity > 4.5
     end
 
     # 1分足で一番下にいること

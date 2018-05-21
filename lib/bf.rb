@@ -25,6 +25,8 @@ require "bf/resque_helper"
 require "bf/scalping"
 
 module BF
+  class DisparityOverError < StandardError; end
+
   END_POINT = 'api.bitflyer.jp'
   BTC_FX_PRODUCT_CODE = 'FX_BTC_JPY'
   BTC_PRODUCT_CODE    = 'BTC_JPY'

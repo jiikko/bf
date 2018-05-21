@@ -1,5 +1,6 @@
 module BF
   class MyTrade < ::ActiveRecord::Base
+
     enum status: [
       :waiting_to_request,
       :waiting_to_sell,
