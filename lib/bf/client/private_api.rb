@@ -38,7 +38,7 @@ module BF
 
       def run(path: , http_class: , query: nil)
         default_body = {
-          product_code: PROCUT_CODE,
+          product_code: BTC_FX_PRODUCT_CODE,
           child_order_type: 'LIMIT',
         }
         body = yield(default_body) if block_given?
@@ -112,7 +112,7 @@ module BF
                       end
         response = super(path: "/v1/me/getexecutions",
                          http_class: Net::HTTP::Get,
-                         query: "product_code=#{PROCUT_CODE}&#{order_query}")
+                         query: "product_code=#{BTC_FX_PRODUCT_CODE}&#{order_query}")
         order = response.first
         order.slice('child_order_id', 'child_order_acceptance_id', 'exec_date', 'id', 'price', 'size') if order.present?
       end

@@ -29,13 +29,25 @@ module BF
 
     def get_state
       retry_with do
-        PublicApi.new.get_public_api("/v1/getboardstate", PROCUT_CODE) || {}
+        PublicApi.new.get_public_api("/v1/getboardstate", BTC_FX_PRODUCT_CODE) || {}
       end
+    end
+
+    def get_disparity
+      fx =
+        retry_with do
+          (PublicApi.new.get_public_api("/v1/getboard", BTC_FX_PRODUCT_CODE) || {})['mid_price']
+        end
+      btc =
+        retry_with do
+          (PublicApi.new.get_public_api("/v1/getboard", BTC_PRODUCT_CODE) || {})['mid_price']
+        end
+      (fx / btc) * 100 - 100
     end
 
     def get_ticker
       retry_with do
-        PublicApi.new.get_public_api("/v1/ticker", PROCUT_CODE) || {}
+        PublicApi.new.get_public_api("/v1/ticker", BTC_FX_PRODUCT_CODE) || {}
       end
     end
 
