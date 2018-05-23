@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe BF::MyTradeShip do
+  before do
+    BF::MyTradeShip.destroy_all
+  end
+
   describe '.running' do
     it 'return running ship' do
       sell_trade = BF::MyTrade.create!(price: 1, size: 0.001, status: :waiting_to_sell, kind: :sell)

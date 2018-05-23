@@ -21,6 +21,15 @@ module BF
       false
     end
 
+    def self.gap_price_from_current_to_last
+      l = self.last
+      if l.nil?
+        return 0
+      else
+        l.gap_price_from_current
+      end
+    end
+
     def status
       if trade_ship_id.nil? || trade_ship.nil?
         return 1
@@ -38,20 +47,11 @@ module BF
       RUNNING_STATUSES.include?(status)
     end
 
-    def self.gap_price_from_current_to_last
-      l = self.last
-      if l.nil?
-        return 0
-      else
-        l.gap_price_from_current
-      end
-    end
-
     def gap_price_from_current
       if Trade.last.nil? || trade_ship.nil? || trade_ship.buy_trade.nil?
         return 0
       end
-      Trade.last.price - trade_ship.buy_trade.price
+      trade_ship.buy_trade.price - Trade.last.price
     end
   end
 end

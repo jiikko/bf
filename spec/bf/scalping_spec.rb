@@ -2,6 +2,7 @@ RSpec.describe BF::Scalping do
   before do
     ResqueSpec.reset!
     BF::MyTrade.destroy_all
+    BF::ScalpingTask.delete_all
   end
 
   after do

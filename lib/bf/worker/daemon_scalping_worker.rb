@@ -1,35 +1,35 @@
 module BF
   class DaemonScalpingWorker < BaseWorker
-    class Sleep
-      def self.run
-        sleep(2)
-      end
-    end
-
     # 下記のときにBF::ScalpingWorkerを発動する
     # * 設定が有効になっていること
     # * 未完了(買い売り待ち)の取引がないこと(or 設定値よりも下のとき)
     # * キューにないこと
     def perform
       loop do
-        unless BF::Setting.enabled_daemon_sclping_worker?
-          Sleep.run && next
-        end
-        # キューに入っているか || Task.runingで検出される前の状態のタイミングを伺っている状態か
-        if BF::ScalpingWorker.queueing? || BF::ScalpingWorker.doing?
-          Sleep.run && next
-        end
-        if BF::ScalpingTask.running.count.zero?
-          do_enqueue && Sleep.run && next
-        end
+        run
+        sleep(2)
+      end
+    end
 
-        # 通常は1つのみを稼働するけど設定値によっては複数個稼働する
-        # 新しく起動する条件は、高値掴みしてしまってからn万以上離れた時
-        if scalping_worker_count_under_max? && gap_price_over_limit?
-          BF.logger.info "#{BF::ScalpingTask.running.count}個稼働中ですが BF::ScalpingWorker を enqueueしました"
-          do_enqueue
-          Sleep.run
-        end
+    def run
+      unless BF::Setting.enabled_daemon_sclping_worker?
+        return
+      end
+      # キューに入っているか || Task.runingで検出される前の状態のタイミングを伺っている状態か
+      if BF::ScalpingWorker.queueing? || BF::ScalpingWorker.doing?
+        return
+      end
+      if BF::ScalpingTask.running.count.zero?
+        do_enqueue
+        return
+      end
+
+      # 通常は1つのみを稼働するけど設定値によっては複数個稼働する
+      # 新しく起動する条件は、高値掴みしてしまってからn万以上離れた時
+      if scalping_worker_count_under_max? && gap_price_over_limit?
+        BF.logger.info "#{BF::ScalpingTask.running.count}個稼働中ですが BF::ScalpingWorker を enqueueしました"
+        do_enqueue
+        return
       end
     end
 
