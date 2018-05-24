@@ -64,6 +64,7 @@ module BF
         return yield
       rescue RuntimeError => e
         BF.logger.info e.inspect
+        false
       rescue OpenSSL::SSL::SSLError,
           Net::HTTPBadResponse,
           Errno::ECONNRESET,

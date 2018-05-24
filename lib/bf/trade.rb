@@ -49,7 +49,7 @@ module BF
 
     def self.fetch
       if BF::Setting.enable_fetch?
-        create!(kind: :minutely, price: BF::Client.new.get_ticker['ltp'])
+        create!(kind: :minutely, price: BF::Client.new.get_ticker['ltp'] || 0)
       end
     end
 
