@@ -16,8 +16,13 @@ module BF
   class DisparityFetcher
     def run
       loop do
-        Resque.redis.set BF::Monitor::FETCH_DISPARITY_KEY, BF::Client.new.get_disparity
-        sleep(2)
+        begin
+          Resque.redis.set(BF::Monitor::FETCH_DISPARITY_KEY, BF::Client.new.get_disparity)
+        rescue => e
+          BF.logger.error(e.inspect)
+        ensure
+          sleep(2)
+        end
       end
     end
   end
@@ -25,9 +30,14 @@ module BF
   class StatusFetcher
     def run
       loop do
-        Redis.new.set BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.new.current_status.to_json
-        # Resque.redis.set BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.current_status
-        sleep(2)
+        begin
+          Redis.new.set BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.new.current_status.to_json
+          # Resque.redis.set BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.current_status
+        rescue => e
+          BF.logger.error(e.inspect)
+        ensure
+          sleep(2)
+        end
       end
     end
   end
