@@ -2,8 +2,13 @@ module BF
   class Fetcher
     def run
       loop do
-        BF::Trade.fetch_with_clean
-        sleep(2)
+        begin
+          BF::Trade.fetch_with_clean
+        rescue => e
+          BF.logger.error(e.inspect)
+        ensure
+          sleep(2)
+        end
       end
     end
   end
