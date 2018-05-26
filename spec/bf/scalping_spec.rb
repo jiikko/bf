@@ -1,7 +1,7 @@
-RSpec.describe BF::Scalping do
+RSpec.describe BF::Scalping::Basic do
   describe '.scalp' do
     it 'ScalpingTaskを作成すること' do
-      scalping = BF::Scalping.new
+      scalping = BF::Scalping::Basic.new
       allow(scalping).to receive(:validate).and_return(true)
       allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
       trade = BF::Trade.create!(price: 3, kind: :minutely)

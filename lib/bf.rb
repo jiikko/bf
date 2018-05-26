@@ -23,7 +23,8 @@ require "bf/worker/daemon_scalping_worker"
 require "bf/worker/remove_waiting_trade_worker"
 require "bf/initialize/resque"
 require "bf/resque_helper"
-require "bf/scalping"
+require "bf/scalping/makiami"
+require "bf/scalping/basic"
 
 module BF
   class DisparityOverError < StandardError; end
