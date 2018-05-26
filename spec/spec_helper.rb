@@ -7,6 +7,14 @@ require "resque_spec"
 require "support/resque_spec"
 
 RSpec.configure do |config|
+  config.before(:each) do
+    ResqueSpec.reset!
+    ActiveRecord::Base.connection.begin_transaction
+  end
+  config.after(:each) do
+    ActiveRecord::Base.connection.rollback_transaction
+  end
+
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
 

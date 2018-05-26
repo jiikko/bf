@@ -2,10 +2,6 @@ require 'spec_helper'
 
 RSpec.describe BF::ScalpingTask do
   before(:each) do
-    BF::MyTradeShip.delete_all
-    BF::MyTrade.delete_all
-    BF::ScalpingTask.delete_all
-    ResqueSpec.reset!
     allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
   end
 

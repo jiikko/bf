@@ -1,10 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe BF::ScalpingWorker do
-  before do
-    ResqueSpec.reset!
-  end
-
   describe '.queueing?' do
     context 'エンキュー済み' do
       it 'return true' do

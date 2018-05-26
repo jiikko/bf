@@ -1,10 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe BF::MyTrade do
-  before do
-    ResqueSpec.reset!
-  end
-
   describe '.run_buy_trade!' do
     context '乖離率が高い時' do
       it '注文しないこと' do

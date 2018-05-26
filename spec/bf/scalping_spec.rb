@@ -1,14 +1,4 @@
 RSpec.describe BF::Scalping do
-  before do
-    ResqueSpec.reset!
-    BF::MyTrade.destroy_all
-    BF::ScalpingTask.delete_all
-  end
-
-  after do
-    BF::Trade.delete_all
-  end
-
   describe '.scalp' do
     it 'ScalpingTaskを作成すること' do
       scalping = BF::Scalping.new
