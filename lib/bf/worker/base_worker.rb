@@ -19,6 +19,15 @@ module BF
         BF.logger.info e.message
       end
     end
+
+    def self.doing?
+      !!Resque.workers.detect do |worker|
+        worker.job.present? && check_payload?(worker.job['payload'])
+      end
+    end
+
+    def self.check_payload?(hash)
+      /#{self.to_s}/ =~ hash['class']
+    end
   end
 end
-# require './lib/bf/worker/test_worker'

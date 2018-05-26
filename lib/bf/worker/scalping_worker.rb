@@ -10,12 +10,6 @@ module BF
     end
 
     class << self
-      def doing?
-        !!Resque.workers.detect do |worker|
-          worker.job.present? && check_payload?(worker.job['payload'])
-        end
-      end
-
       def queueing?
         !!Resque.peek("normal", 0, 100).detect { |hash|
           check_payload?(hash)

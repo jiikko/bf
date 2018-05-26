@@ -1,14 +1,49 @@
 require 'spec_helper'
 
 RSpec.describe BF::DaemonScalpingWorker do
-  before do
-    BF::MyTrade.delete_all
-    BF::ScalpingTask.delete_all
-    ResqueSpec.reset!
-    allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
+  let(:idol_worker) { OpenStruct.new(job: {}) }
+  let(:target_job)  { OpenStruct.new(job: {"queue"=>"normal", "run_at"=>"2018-05-25T17:38:55Z", "payload"=>{"class"=>"BF::DaemonScalpingWorker", "args"=>[]}}) }
+  let(:other_job1)  { OpenStruct.new(job: {"queue"=>"normal", "run_at"=>"2018-05-25T17:38:55Z", "payload"=>{"class"=>"BF::ScalpingWorker", "args"=>[]}}) }
+  let(:other_job2)  { OpenStruct.new(job: {"queue"=>"normal", "run_at"=>"2018-05-25T17:38:55Z", "payload"=>{"class"=>"BF::DaemonWorker", "args"=>[]}}) }
+
+  describe '.doing?' do
+    context '実行中の自分自身のジョブがないとき' do
+      before do
+        allow(Resque).to receive(:workers).and_return([
+          idol_worker, other_job1, other_job2, 
+        ])
+      end
+      it 'return false' do
+        expect(BF::DaemonScalpingWorker.doing?).to eq(false)
+      end
+    end
+
+    context 'workerがいないとき' do
+      before do
+        allow(Resque).to receive(:workers).and_return([])
+      end
+      it 'be return' do
+        expect(BF::DaemonScalpingWorker.doing?).to eq(false)
+      end
+    end
+
+    context 'workerが実行中のジョブがあるとき' do
+      before do
+        allow(Resque).to receive(:workers).and_return([
+          idol_worker, idol_worker, idol_worker, target_job, other_job1,
+        ])
+      end
+      it 'return true' do
+        expect(BF::DaemonScalpingWorker.doing?).to eq(true)
+      end
+    end
   end
 
   describe '#run' do
+    before do
+      allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
+    end
+
     context 'BF::Setting.record.max_scalping_worker_count が 1の時' do
       before do
         BF::Setting.record.update!(max_scalping_worker_count: 1)
