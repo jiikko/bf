@@ -141,6 +141,13 @@ module BF
      api_client.get_order(order_id: order_id)
    end
 
+   def profit
+     ship = trade_ship
+     sell = ship.sell_trade.size * ship.sell_trade.price rescue 0
+     buy  = ship.buy_trade.size * ship.buy_trade.price rescue 0
+     sell - buy
+   end
+
     private
 
     def create_sell_trade!
