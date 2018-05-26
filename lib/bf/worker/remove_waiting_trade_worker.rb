@@ -6,6 +6,9 @@ module BF
       BF::MyTradeShip.running.each do |ship|
         # TODO buy_tradeがrequestedのままだったらキャンセルにする
         # ship.buy_trade
+        if ship.buy_trade.error?
+          ship.sell_trade.canceled!
+        end
         if ship.sell_trade.trade_sccessd?
           ship.sell_trade.succeed!
         end
