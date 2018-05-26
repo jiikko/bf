@@ -1,9 +1,10 @@
 require "bf/scalping/modules/validator"
+require "bf/scalping/modules/low_tech_validator"
 
 module BF
   class Scalping
     class Base
-      include BF::Scalping::Modules::Validator
+      include Validator
 
       private
 
