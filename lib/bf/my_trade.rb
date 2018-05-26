@@ -104,10 +104,10 @@ module BF
       self.update!(order_id: order_id)
     end
 
-    def wait_to_sell
+    def wait_to_sell(timeout: 15.minutes)
       loop do
         self.reload
-        if created_at.localtime < 15.minutes.ago
+        if created_at.localtime < timeout.ago
           BF.logger.info "買いポーリングしていましたがタイムアウトです。買い注文をキャンセルします。売り注文は出していません。"
           cancel_order_with_timeout!
           return
