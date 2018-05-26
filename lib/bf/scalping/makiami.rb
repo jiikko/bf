@@ -9,7 +9,7 @@ module BF
           last_price = BF::Trade.last.price
           maiami_times.times do |i|
             price = last_price - (makiami_range * i)
-            buy_trade = BF::MyTrade.new.run_buy_trade!(price)
+            buy_trade = BF::MyTrade.new.run_buy_trade!(price, timeout: 2.minutes)
             ScalpingTask.create!(trade_ship_id: buy_trade.trade_ship.id)
           end
           return true

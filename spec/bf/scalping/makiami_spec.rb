@@ -11,6 +11,7 @@ RSpec.describe BF::Scalping::Makiami do
         expect(BF::ScalpingTask.count).to eq(4)
         expect(BF::MyTradeShip.first.scalping_task).to be_a(BF::ScalpingTask)
         expect(BF::MyTradeShip.all.map(&:buy_trade).map(&:price)).to eq([3, -497, -997, -1497])
+        expect(BF::MyTradeShip.all.map(&:buy_trade).map(&:params).uniq).to eq([{:timeout=>2.minutes}])
       end
     end
   end
