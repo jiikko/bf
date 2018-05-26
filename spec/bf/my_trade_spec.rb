@@ -1,15 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe BF::MyTrade do
-  describe '#profit' do
-    it 'return value' do
-      allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
-      allow_any_instance_of(BF::MyTrade).to receive(:check_buy_trade)
-      buy_trade = BF::MyTrade.new.run_buy_trade!(300)
-      expect(buy_trade.profit).to eq(4)
-    end
-  end
-
   describe '.run_buy_trade!' do
     context '乖離率が高い時' do
       it '注文しないこと' do

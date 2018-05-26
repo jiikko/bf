@@ -22,5 +22,11 @@ module BF
     def running?
       buy_trade.running? || sell_trade.running?
     end
+
+    def profit
+     sell = sell_trade.size * sell_trade.price rescue 0
+     buy  = buy_trade.size * buy_trade.price rescue 0
+     sell - buy
+    end
   end
 end
