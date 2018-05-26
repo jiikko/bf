@@ -1,5 +1,3 @@
-require "bf/scalping/modules/validator"
-
 module BF
   class Scalping
     class Makiami < Base

@@ -2,7 +2,7 @@ module BF
   class Scalping
     module LowTechValidator
       def valid?
-        unless super
+        unless base_valid?
           return false
         end
 
