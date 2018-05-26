@@ -8,9 +8,9 @@ class CreateMyTrade < ActiveRecord::Migration[5.1]
       t.string :order_id
       t.string :order_acceptance_id
       t.text :error_trace
+      t.text :params
 
       t.timestamps null: false
     end
   end
 end
-

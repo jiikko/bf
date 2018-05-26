@@ -1,5 +1,6 @@
 module BF
   class MyTrade < ::ActiveRecord::Base
+    serialize :params
 
     enum status: [
       :waiting_to_request,
@@ -43,9 +44,9 @@ module BF
       end
     end
 
-    def run_buy_trade!(target_price=nil)
+    def run_buy_trade!(target_price=nil, options={})
       target_price ||= api_client.min_price_by_current_range
-      update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy)
+      update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy, params: options.presence)
       begin
         create_sell_trade!
         order_acceptance_id = api_client.buy(target_price, order_size) # まだ約定していない

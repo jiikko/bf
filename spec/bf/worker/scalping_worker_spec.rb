@@ -13,14 +13,12 @@ RSpec.describe BF::ScalpingWorker do
         expect(BF::ScalpingWorker.queueing?).to eq(false)
       end
     end
-
     context 'diff args and queued BF::ScalpingWorker ' do
       it 'return false' do
         BF::ScalpingWorker.perform_async("from" => 'hoge')
         expect(BF::ScalpingWorker.queueing?).to eq(false)
       end
     end
-
     context 'nothing args and queued BF::ScalpingWorker ' do
       it 'return false' do
         BF::ScalpingWorker.perform_async("from" => nil)
