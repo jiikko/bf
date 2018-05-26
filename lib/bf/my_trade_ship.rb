@@ -18,6 +18,18 @@ module BF
         BF::MyTrade::RUNNING_STATUS_FOR_BUY.map { |x| BF::MyTrade.statuses[x] },
       )
     }
+    scope :succeed, ->{
+      join_sql = <<-SQL
+      inner join #{BF::MyTrade.table_name} buy_table
+        on  #{BF::MyTradeShip.table_name}.buy_trade_id = buy_table.id
+      inner join #{BF::MyTrade.table_name} sell_table
+        on #{BF::MyTradeShip.table_name}.sell_trade_id = sell_table.id
+      SQL
+      joins(join_sql).where(
+        "sell_table.status = :status and buy_table.status = :status",
+        status: BF::MyTrade.statuses[:succeed]
+      )
+    }
 
     def running?
       buy_trade.running? || sell_trade.running?
