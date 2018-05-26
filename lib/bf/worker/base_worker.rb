@@ -14,6 +14,9 @@ module BF
       when Resque::DirtyExit
         BF.logger.info "#{self.inspect}(#{args}) をqueueに積み直しました"
         self.perform_async(*args)
+      when Interrupt
+        BF.logger.info "Ctrl+cを検出しました。#{self.inspect}(#{args}) をqueueに積み直しました"
+        self.perform_async(*args)
       else
         BF.logger.info "[#{e.inspect}] #{self.inspect}(#{args}) で想定外の例外を検出しました。何もしていません。"
         BF.logger.info e.message
