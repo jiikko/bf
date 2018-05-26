@@ -1,10 +1,10 @@
 module BF
   class Scalping
-    class Basic
+    class Basic < Base
       def scalp(dry_run=false)
         @price_table = BF::Trade.price_table
 
-        if validate && !dry_run
+        if valid? && !dry_run
           BF.logger.info '注文しましょう！'
           buy_trade = BF::MyTrade.new.run_buy_trade!(BF::Trade.last.price)
           ScalpingTask.create!(trade_ship_id: buy_trade.trade_ship.id)
@@ -14,16 +14,11 @@ module BF
 
       private
 
-      def validate
-        if over_disparity?
-          BF.logger.debug '乖離率が高いので中止しました'
-          return
-        end
-
-        unless store_status_ok?
-          BF.logger.debug 'サーバに負荷がかかっているので中止しました'
+      def valid?
+        unless super
           return false
         end
+
         unless under_1000?
           BF.logger.debug '1で値幅が1000以上あるので中止しました'
           return false
@@ -41,12 +36,6 @@ module BF
         return true
       end
 
-      # 5%を超えると赤字
-      def over_disparity?
-        disparity = BF::Monitor.new.current_disparity_from_datastore
-        disparity >= BF::STOP_DISPARITY_LIMIT
-      end
-
       # 1分足で一番下にいること
       def is_in_low_range?
         last_price = BF::Trade.last.price
@@ -56,11 +45,6 @@ module BF
         }.first
         BF.logger.debug "[1分足] #{minutes1}"
         minutes1[0] <= 0
-      end
-
-      def store_status_ok?
-        health_number = BF::Monitor.state_const_with_number[BF::Monitor.new.current_status_from_datastore['health']]
-        health_number == 5
       end
 
       # 値幅が大きいとこわいので小刻みな時を狙う(試験運用)
