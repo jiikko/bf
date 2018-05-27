@@ -40,5 +40,9 @@ module BF
      buy  = buy_trade.size * buy_trade.price rescue 0
      sell - buy
     end
+
+    def duration_time
+      sell_trade.updated_at - buy_trade.created_at
+    end
   end
 end

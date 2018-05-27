@@ -60,4 +60,17 @@ RSpec.describe BF::MyTradeShip do
       end
     end
   end
+
+  describe '#duration_time' do
+    it 'return sec' do
+      start_at = Time.new(2011, 11, 11, 12, 12, 0)
+      end_at = Time.new(2011, 11, 11, 12, 12, 5)
+      sell_trade = BF::MyTrade.create!(price: 1, size: 0.001, status: :waiting_to_sell, kind: :sell)
+      buy_trade  = BF::MyTrade.create!(price: 1, size: 0.001, status: :requested,       kind: :buy)
+      ship = BF::MyTradeShip.create(sell_trade: sell_trade, buy_trade: buy_trade)
+      sell_trade.update!(updated_at: end_at)
+      buy_trade.update!(created_at: start_at)
+      expect(ship.duration_time).to eq(5)
+    end
+  end
 end
