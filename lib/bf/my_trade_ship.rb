@@ -41,8 +41,12 @@ module BF
      sell - buy
     end
 
-    def duration_time
-      sell_trade.updated_at - buy_trade.created_at
+    def duration_from_buy_trade_to_succeed
+      buy_trade.updated_at - buy_trade.created_at
+    end
+
+    def duration_from_sell_trade_to_succeed
+      sell_trade.updated_at - buy_trade.updated_at
     end
   end
 end
