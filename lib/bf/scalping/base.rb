@@ -16,6 +16,7 @@ module BF
           BF.logger.debug 'サーバに負荷がかかっているので中止しました'
           return false
         end
+        return true
       end
 
       # 5%を超えると赤字

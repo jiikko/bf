@@ -8,7 +8,7 @@ module BF
           BF.logger.info '売りを確認しました。'
           break
         else
-          sleep(100)
+          sleep(30)
         end
       end
     end
