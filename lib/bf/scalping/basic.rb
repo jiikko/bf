@@ -8,7 +8,7 @@ module BF
 
         if valid? && !dry_run
           BF.logger.info '注文しましょう！'
-          buy_trade = BF::MyTrade.new.run_buy_trade!(BF::Trade.last.price, { timeout: 2.minutes })
+          buy_trade = BF::MyTrade.new.run_buy_trade!(BF::Trade.last.price)
           ScalpingTask.create!(trade_ship_id: buy_trade.trade_ship.id)
           return true
         end
