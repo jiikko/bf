@@ -130,6 +130,9 @@ module BF
     def cancel_order!
       api_client.cancel_order(self.order_acceptance_id)
       canceled!
+      if kind == 'buy'
+        sell_trade.canceled!
+      end
     end
 
     def cancel_order_with_timeout!
