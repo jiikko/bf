@@ -7,7 +7,7 @@ module BF
         end
 
         unless under?
-          BF.logger.debug '1で値幅が1000以上あるので中止しました'
+          BF.logger.debug "[#{self.class}] 1で値幅が1000以上あるので中止しました"
           return false
         end
         unless good_price_detection?
@@ -17,7 +17,7 @@ module BF
         end
 
         unless is_in_low_range?
-          BF.logger.debug '1分足で高値なので中止しました'
+          BF.logger.debug '[#{self.class}] 1分足で高値なので中止しました'
           return false
         end
         return true

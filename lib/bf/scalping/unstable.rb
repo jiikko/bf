@@ -37,6 +37,10 @@ module BF
         diff = max - min
         (400..5000).include?(diff)
       end
+
+      def good_price_detection?
+        true
+      end
     end
   end
 end
