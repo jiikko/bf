@@ -24,6 +24,7 @@ require "bf/worker/remove_waiting_trade_worker"
 require "bf/initialize/resque"
 require "bf/resque_helper"
 require "bf/scalping/base"
+require "bf/scalping/unstable"
 
 module BF
   class DisparityOverError < StandardError; end
@@ -46,6 +47,10 @@ module BF
 
     def logger=(logger)
       @logger = logger
+    end
+
+    def scalping_worker_class
+      Scalping::Unstable
     end
   end
 end

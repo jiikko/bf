@@ -2,7 +2,7 @@ module BF
   class ScalpingWorker < BaseWorker
     def perform(options = nil)
       loop do
-        if BF::Scalping::Basic.new.scalp
+        if BF.scalping_worker_class.new.scalp
           break
         end
         sleep(5)
