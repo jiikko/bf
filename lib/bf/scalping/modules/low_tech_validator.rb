@@ -6,7 +6,7 @@ module BF
           return false
         end
 
-        unless under_1000?
+        unless under?
           BF.logger.debug '1で値幅が1000以上あるので中止しました'
           return false
         end
@@ -35,7 +35,7 @@ module BF
       end
 
       # 値幅が大きいとこわいので小刻みな時を狙う(試験運用)
-      def under_1000?
+      def under?
         # 差分を計算する
         minutes1 = diff_list = @price_table.values.first
         min = minutes1[0]
