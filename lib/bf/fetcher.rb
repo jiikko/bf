@@ -7,7 +7,7 @@ module BF
         rescue => e
           BF.logger.error(e.inspect)
         ensure
-          sleep(2)
+          sleep(0.9)
         end
       end
     end
