@@ -41,7 +41,8 @@ module BF
         min = minutes1[0]
         max = minutes1[1]
         diff = max - min
-        (400..1000).include?(diff)
+        # 200..1000くらい
+        (BF::MyTrade.new.request_order_range..1000).include?(diff)
       end
 
       def good_price_detection?
