@@ -44,8 +44,7 @@ module BF
       end
     end
 
-    def run_buy_trade!(target_price=nil, options={})
-      target_price ||= api_client.min_price_by_current_range
+    def run_buy_trade!(target_price, options={})
       update!(price: target_price, size: request_order_size, status: :waiting_to_request, kind: :buy, params: options.presence)
       begin
         create_sell_trade!
@@ -77,7 +76,7 @@ module BF
     def request_order_range
       setting_record = BF::Setting.record
       if setting_record.respond_to?(:order_range)
-        setting_record.order_size
+        setting_record.order_range
       else
         400
       end
