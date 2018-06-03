@@ -46,10 +46,10 @@ module BF
 
     def run_buy_trade!(target_price=nil, options={})
       target_price ||= api_client.min_price_by_current_range
-      update!(price: target_price, size: order_size, status: :waiting_to_request, kind: :buy, params: options.presence)
+      update!(price: target_price, size: request_order_size, status: :waiting_to_request, kind: :buy, params: options.presence)
       begin
         create_sell_trade!
-        order_acceptance_id = api_client.buy(target_price, order_size) # まだ約定していない
+        order_acceptance_id = api_client.buy(target_price, request_order_size) # まだ約定していない
         update!(order_acceptance_id: order_acceptance_id, status: :requested)
       rescue => e
         update!(error_trace: e.inspect, status: :error)
@@ -64,7 +64,7 @@ module BF
       begin
         order_acceptance_id = nil
         Retryable.retryable(tries: self.class.tries_count) do
-          order_acceptance_id = sell_trade.api_client.sell(sell_trade.price, sell_trade.order_size)
+          order_acceptance_id = sell_trade.api_client.sell(sell_trade.price, sell_trade.size)
         end
         sell_trade.update!(order_acceptance_id: order_acceptance_id, status: :selling)
       rescue => e
@@ -79,8 +79,13 @@ module BF
       400
     end
 
-    def order_size
-      0.01
+    def request_order_size
+      setting_record = BF::Setting.record
+      if setting_record.respond_to?(:order_size)
+        setting_record.order_size
+      else
+        0.01
+      end
     end
 
     def api_client
@@ -150,7 +155,7 @@ module BF
     def create_sell_trade!
       raise("invalid kind, because I called from sell") if self.sell?
       ship = create_trade_ship!
-      sell_trade_id = BF::MyTrade.create!(price: self.price + range, size: order_size, status: :waiting_to_sell, kind: :sell).id
+      sell_trade_id = BF::MyTrade.create!(price: self.price + range, size: ship.buy_trade.size, status: :waiting_to_sell, kind: :sell).id
       ship.update!(sell_trade_id: sell_trade_id)
     end
   end
