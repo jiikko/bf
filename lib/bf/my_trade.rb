@@ -74,9 +74,13 @@ module BF
       OrderWaitingWorker.perform_async(sell_trade.id)
     end
 
-    # TODO
     def range
-      400
+      setting_record = BF::Setting.record
+      if setting_record.respond_to?(:order_range)
+        setting_record.order_size
+      else
+        400
+      end
     end
 
     def request_order_size
