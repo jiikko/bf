@@ -74,7 +74,7 @@ module BF
       OrderWaitingWorker.perform_async(sell_trade.id)
     end
 
-    def range
+    def request_order_range
       setting_record = BF::Setting.record
       if setting_record.respond_to?(:order_range)
         setting_record.order_size
@@ -159,7 +159,7 @@ module BF
     def create_sell_trade!
       raise("invalid kind, because I called from sell") if self.sell?
       ship = create_trade_ship!
-      sell_trade_id = BF::MyTrade.create!(price: self.price + range, size: ship.buy_trade.size, status: :waiting_to_sell, kind: :sell).id
+      sell_trade_id = BF::MyTrade.create!(price: self.price + request_order_range, size: ship.buy_trade.size, status: :waiting_to_sell, kind: :sell).id
       ship.update!(sell_trade_id: sell_trade_id)
     end
   end
