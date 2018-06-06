@@ -42,6 +42,10 @@ module BF
       buy_trade.running? || sell_trade.running?
     end
 
+    def canceled?
+      buy_trade.canceled? || sell_trade.canceled? || sell_trade.canceled_before_request?
+    end
+
     def profit
      sell = sell_trade.size * sell_trade.price rescue 0
      buy  = buy_trade.size * buy_trade.price rescue 0
