@@ -101,15 +101,11 @@ module BF
     class GetOrderRequest < BaseRequest
       # order status
       # => 'ACTIVE', 'COMPLETED', 'CANCELED', 'EXPIRED', 'REJECTED'
-      def run(order_id: nil, order_acceptance_id: nil)
-        if order_id.nil? && order_acceptance_id.nil?
-          raise 'order_acceptance_id と order_id の両方ありません'
+      def run(order_acceptance_id: nil)
+        if order_acceptance_id.nil?
+          raise 'order_acceptance_idがありません'
         end
-        order_query = if order_id
-                        "child_order_id=#{order_id}"
-                      else
-                        "child_order_acceptance_id=#{order_acceptance_id}"
-                      end
+        order_query = "child_order_acceptance_id=#{order_acceptance_id}"
         response = super(path: "/v1/me/getexecutions",
                          http_class: Net::HTTP::Get,
                          query: "product_code=#{BTC_FX_PRODUCT_CODE}&#{order_query}")

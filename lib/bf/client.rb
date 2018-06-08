@@ -20,9 +20,9 @@ module BF
       SellRequest.new.run(price, size)
     end
 
-    def get_order(order_id: nil, order_acceptance_id: nil)
+    def get_order(order_acceptance_id: nil)
       retry_with do
-        GetOrderRequest.new.run(order_id: order_id, order_acceptance_id: order_acceptance_id)
+        GetOrderRequest.new.run(order_acceptance_id: order_acceptance_id)
       end
     end
 

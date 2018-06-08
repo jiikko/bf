@@ -134,30 +134,8 @@ RSpec.describe BF::MyTrade do
   end
 
   describe '#trade_sccessd?' do
-    context 'order_id を持っている時' do
-      it 'order_id で検索すること' do
-        buy_trade = BF::MyTrade.new(kind: :buy, order_id: '1')
-        api_client = double(:api_client)
-        allow(api_client).to receive(:get_order).with(order_id: '1').once do
-          { 'child_order_state' => 'COMPLETED' }
-        end
-        allow(buy_trade).to receive(:api_client).and_return(api_client)
-        expect(buy_trade.trade_sccessd?).to eq(true)
-      end
-    end
-    context 'order_acceptance_id と order_id の両方を持っている時' do
-      it 'order_idで検索すること' do
-        buy_trade = BF::MyTrade.new(kind: :buy, order_id: '1', order_acceptance_id: '2')
-        api_client = double(:api_client)
-        allow(api_client).to receive(:get_order).with(order_id: '1').once do
-          { 'child_order_state' => 'COMPLETED' }
-        end
-        allow(buy_trade).to receive(:api_client).and_return(api_client)
-        expect(buy_trade.trade_sccessd?).to eq(true)
-      end
-    end
-    context 'order_acceptance_id のみを持っている時' do
-      it 'order_acceptance_id で検索して、order_idをセットすること' do
+    context 'order_acceptance_id を持っている時' do
+      it 'order_acceptance_id で検索すること' do
         buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 0, size: 0)
         api_client = double(:api_client)
         allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
@@ -165,7 +143,6 @@ RSpec.describe BF::MyTrade do
         end
         allow(buy_trade).to receive(:api_client).and_return(api_client)
         expect(buy_trade.trade_sccessd?).to eq(true)
-        expect(buy_trade.order_id).to eq('1')
       end
     end
   end

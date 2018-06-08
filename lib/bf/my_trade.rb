@@ -97,20 +97,12 @@ module BF
 
     def trade_sccessd?
       case
-      when order_id
-        api_client.get_order(order_id: order_id).present?
       when order_acceptance_id
         response = api_client.get_order(order_acceptance_id: order_acceptance_id)
-        set_order_id!(response && response['child_order_id'])
         response.present?
       else
-        raise('order, order_acceptance_id の両方がありません')
+        raise('order_acceptance_id がありません')
       end
-    end
-
-    def set_order_id!(order_id)
-      return if order_id.nil?
-      self.update!(order_id: order_id)
     end
 
     def wait_to_sell(timeout: 15.minutes)
