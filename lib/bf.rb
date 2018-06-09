@@ -25,6 +25,7 @@ require "bf/initialize/resque"
 require "bf/resque_helper"
 require "bf/scalping/base"
 require "bf/scalping/unstable"
+require "bf/summarized_my_trade"
 
 module BF
   class DisparityOverError < StandardError; end
