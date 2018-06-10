@@ -52,7 +52,7 @@ module BF
     end
 
     def scalping_worker_class
-      Scalping::Unstable
+      Scalping::Basic
     end
   end
 end
