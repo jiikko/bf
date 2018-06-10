@@ -1,4 +1,16 @@
 RSpec.describe BF::Scalping::Basic do
+  describe '#valid?' do
+    context '他に実行中の時' do
+      it 'return false' do
+        skip
+        scalping = BF::Scalping::Basic.new
+        binding.pry
+        allow_any_instance_of(BF::ScalpingWorker).to receive(:doing?).and_return(true)
+        scalping.valid?
+      end
+    end
+  end
+
   describe '.scalp' do
     context 'vaild? is true' do
       it 'ScalpingTaskを作成すること' do
