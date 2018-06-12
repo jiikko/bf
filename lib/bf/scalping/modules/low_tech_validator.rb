@@ -8,9 +8,9 @@ module BF
 
         # 複数エンキューされていると同じタイミングで爆死する可能性があるので、
         # 同時実行できる数を1つに制限する
-        if BF::ScalpingWorker.doing?
-          return false
-        end
+        # if BF::ScalpingWorker.doing?
+        #  return false
+        # end
 
         unless under?
           BF.logger.debug "[#{self.class}] 1で値幅がn000以上あるので中止しました"
