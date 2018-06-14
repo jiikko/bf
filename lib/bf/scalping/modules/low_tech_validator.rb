@@ -50,7 +50,7 @@ module BF
       def hight_price?
         min_of_5_60max = BF::Trade.price_table.select { |x, (min, max)| x >= 5 }.map { |x, (min, max)| max }.min
         last_price = BF::Trade.last.price
-        min_of_5_60max > last_price
+        min_of_5_60max < last_price
       end
 
       # 値幅が大きいとこわいので小刻みな時を狙う(試験運用)
