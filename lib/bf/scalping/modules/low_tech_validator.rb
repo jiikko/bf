@@ -16,9 +16,14 @@ module BF
           BF.logger.debug "[#{self.class}] 1で値幅がn000以上あるので中止しました"
           return false
         end
+
         unless good_price_detection?
           BF.logger.debug '^下上 以外だったので中止しました'
-          /^下上/
+          return false
+        end
+
+        if hight_price?
+          BF.logger.debug '5~60の高値より上だったので中止しました'
           return false
         end
 
@@ -26,6 +31,7 @@ module BF
           BF.logger.debug "[#{self.class}] n分足で高値なので中止しました"
           return false
         end
+
         return true
       end
 
@@ -38,6 +44,13 @@ module BF
         }.first
         BF.logger.debug "[1分足] #{minutes1}"
         minutes1[0] <= 0
+      end
+
+      # 突発的な高値更新した時に飛びつかないようにする
+      def hight_price?
+        min_of_5_60max = BF::Trade.price_table.select { |x, (min, max)| x >= 5 }.map { |x, (min, max)| max }.min
+        last_price = BF::Trade.last.price
+        min_of_5_60max > last_price
       end
 
       # 値幅が大きいとこわいので小刻みな時を狙う(試験運用)
