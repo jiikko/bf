@@ -5,7 +5,7 @@ module BF
     def self.summarize!(ago_days: 2.day)
       # TODO SQLでやる
       ships_table = BF::MyTradeShip.succeed.includes(:scalping_task, :buy_trade, :sell_trade).
-        where("#{BF::MyTradeShip.table_name}.created_at > ?", ago_days.ago).order(created_at: :desc).
+        where("#{BF::MyTradeShip.table_name}.created_at > ?", ago_days.ago.beginning_of_day).order(created_at: :desc).
         group_by { |x| x.created_at.localtime.strftime('%Y/%m/%d') }
 
       ships_table.each do |date, tasks|
