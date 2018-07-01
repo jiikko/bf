@@ -4,9 +4,13 @@ module BF
       sell_trade = BF::MyTrade.find_by_sell(sell_trade_id)
       loop do
         sell_trade.reload
-        if sell_trade.trade_sccessd?
+        case
+        when sell_trade.trade_sccessd?
           sell_trade.succeed!
           BF.logger.info '売りを確認しました。'
+          break
+        when sell_trade.canceled?
+          BF.logger.info 'キャンセルされました。'
           break
         else
           sleep(30)
