@@ -4,7 +4,7 @@ require "bundler/setup"
 require "pry"
 require "bf"
 require "resque_spec"
-require "support/resque_spec"
+require "support/factory"
 
 RSpec.configure do |config|
   config.before(:each) do

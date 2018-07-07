@@ -1,38 +1,28 @@
 require 'spec_helper'
-require "active_support/testing/time_helpers"
 
 RSpec.describe BF::SummarizedMyTrade do
-  include ActiveSupport::Testing::TimeHelpers
+  describe 'summarize!' do
+    it 'be success' do
+      prev_day = 1.day.ago
+      today = Time.now
+      Factory.create_my_trade_ship(created_at: today)
+      Factory.create_my_trade_ship(created_at: prev_day)
+      Factory.create_my_trade_ship(created_at: prev_day)
+      Factory.create_my_trade_ship(created_at: prev_day, by: :automation)
 
-  describe '.summarize!' do
-    it 'レコードを作ること' do
-      # manual
-      buy_trade  = BF::MyTrade.create!(price: 1, size: 0.01, status: :succeed, kind: :buy)
-      sell_trade = BF::MyTrade.create!(price: 201, size: 0.01, status: :succeed, kind: :sell)
-      closed_ship = BF::MyTradeShip.create!(sell_trade: sell_trade, buy_trade: buy_trade, created_at: 1.day.ago, created_at: '2012-01-01 02:00:00'.to_time)
-      # automation
-      buy_trade  = BF::MyTrade.create!(price: 1, size: 0.01, status: :succeed, kind: :buy)
-      sell_trade = BF::MyTrade.create!(price: 201, size: 0.01, status: :succeed, kind: :sell)
-      closed_ship = BF::MyTradeShip.create!(sell_trade: sell_trade, buy_trade: buy_trade, created_at: '2012-01-01 02:00:00'.to_time)
-      closed_ship.create_scalping_task!
+      prev_day_relation = BF::SummarizedMyTrade.where(summarized_on: prev_day.strftime('%Y/%m/%d'))
+      today_relation = BF::SummarizedMyTrade.where(summarized_on: today.strftime('%Y/%m/%d'))
+      expect(BF::SummarizedMyTrade.count).to eq(4)
+      expect(today_relation.count).cout).to eq(1)
+      expect(prev_day_relation.count).cout).to eq(3)
+      prev_day_relation_table_by_kind = prev_day_relation.group_by(:kind)
+      expect(prev_day_relation_table_by_kind[:manual].size).to eq(2)
+      expect(prev_day_relation_table_by_kind[:automation].size).to eq(1)
+    end
 
-      # manual
-      buy_trade  = BF::MyTrade.create!(price: 1, size: 0.01, status: :succeed, kind: :buy)
-      sell_trade = BF::MyTrade.create!(price: 201, size: 0.01, status: :succeed, kind: :sell)
-      closed_ship = BF::MyTradeShip.create!(sell_trade: sell_trade, buy_trade: buy_trade, created_at: '2012-01-02 02:00:00'.to_time)
-      # manual
-      buy_trade  = BF::MyTrade.create!(price: 1, size: 0.01, status: :succeed, kind: :buy)
-      sell_trade = BF::MyTrade.create!(price: 201, size: 0.01, status: :succeed, kind: :sell)
-      closed_ship = BF::MyTradeShip.create!(sell_trade: sell_trade, buy_trade: buy_trade, created_at: '2012-01-02 02:00:00'.to_time)
-
-      travel_to('2012-01-02 03:00:00'.to_date) do
-        BF::SummarizedMyTrade.summarize!(ago_days: 3.days)
-        expect(BF::SummarizedMyTrade.all.map { |x| x.slice(:kind, :profit, :count, :summarized_on) }).to match_array([
-          {"kind"=>"manual", "profit"=>2, "count"=>1, "summarized_on"=>'2012-01-01'.to_date},
-          {"kind"=>"automation", "profit"=>2, "count"=>1, "summarized_on"=>'2012-01-01'.to_date},
-          {"kind"=>"manual", "profit"=>4, "count"=>2, "summarized_on"=>'2012-01-02'.to_date},
-          {"kind"=>"automation", "profit"=>0, "count"=>0, "summarized_on"=>'2012-01-02'.to_date},
-        ])
+    context 'when has args' do
+      it 'be success' do
+        BF::MyTradeShip.create
       end
     end
   end
