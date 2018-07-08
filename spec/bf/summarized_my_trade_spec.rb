@@ -13,9 +13,6 @@ RSpec.describe BF::SummarizedMyTrade do
 
       prev_day_relation = BF::SummarizedMyTrade.where(summarized_on: prev_day.strftime('%Y/%m/%d'))
       today_relation = BF::SummarizedMyTrade.where(summarized_on: today.strftime('%Y/%m/%d'))
-      expect(BF::SummarizedMyTrade.count).to eq(4)
-      expect(today_relation.count).to eq(2)
-      expect(prev_day_relation.count).to eq(2)
       manual_prev_day_relation = prev_day_relation.find { |x| x.kind == "manual" }
       expect(manual_prev_day_relation.count).to eq(1)
       expect(manual_prev_day_relation.profit).to eq(10)

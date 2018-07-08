@@ -6,3 +6,10 @@ mysql:
   database: bf_cli_development
   charset: utf8md4
   pool: 3
+test:
+  adapter: mysql2
+  host: localhost
+  username: root
+  password:
+  database: bf_cli_test
+  charset: utf8md4

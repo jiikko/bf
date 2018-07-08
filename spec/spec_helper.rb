@@ -26,9 +26,10 @@ RSpec.configure do |config|
   end
 end
 
+# sqlite3, :memory:を使っていたがDATE_FORMATを使いたくなったのでMySQLにする
 ActiveRecord::Base.establish_connection(
-  adapter:   'sqlite3',
-  database:  ':memory:'
+  YAML.load_file("database.yml")['test']
 )
+
 ActiveRecord::Migrator.migrate(File.expand_path('../../db/migrate', __FILE__))
 ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), '../log/test.log'))
