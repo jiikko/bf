@@ -7,7 +7,7 @@ module BF
         group(:time, "is_manual").
         left_joins(:scalping_task).
         where("#{BF::MyTradeShip.table_name}.created_at > ?", (Time.now.beginning_of_day - ago_days)).
-        select("DATE_FORMAT(my_trade_ships.created_at, '%Y%m%d') time",
+        select("DATE_FORMAT(my_trade_ships.created_at + INTERVAL 9 hour, '%Y%m%d') time",
                "(CASE WHEN scalping_tasks.id is null THEN true ELSE false end) as is_manual",
                'sum(sell_table.price * sell_table.size) - sum(buy_table.price * buy_table.size) as profit_by_sql',
                "count(*) as my_trade_count")
