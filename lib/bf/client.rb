@@ -47,6 +47,7 @@ module BF
         retry_with do
           (PublicApi.new.get_public_api("/v1/getboard", BTC_PRODUCT_CODE) || {})['mid_price']
         end
+      (fx || (return(100))) && (btc || (return(100)))
       (fx / btc) * 100 - 100
     end
 
@@ -63,7 +64,7 @@ module BF
       begin
         return yield
       rescue RuntimeError => e
-        BF.logger.info e.inspect
+        BF.logger.error(e.inspect + e.full_message)
         false
       rescue OpenSSL::SSL::SSLError,
           Net::HTTPBadResponse,
@@ -72,14 +73,14 @@ module BF
           Errno::ETIMEDOUT,
           Errno::EHOSTUNREACH,
           SocketError => e
-        BF.logger.info e.inspect
+        BF.logger.error(e.inspect + e.full_message)
         sleep(3)
         retry
       rescue JSON::ParserError
         sleep(3)
         retry # メンテナンス中だとHTMLが返ってきてparseが失敗するので
       rescue Timeout::Error, Net::OpenTimeout => e
-        BF.logger.info e.inspect
+        BF.logger.error(e.inspect + e.full_message)
         sleep(5)
         retry
       end
