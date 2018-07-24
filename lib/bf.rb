@@ -35,7 +35,7 @@ module BF
   BTC_FX_PRODUCT_CODE = 'FX_BTC_JPY'
   BTC_PRODUCT_CODE    = 'BTC_JPY'
 
-  STOP_DISPARITY_LIMIT = 4.8
+  STOP_DISPARITY_LIMIT = 4.9
 
   class << self
     def logger
