@@ -52,6 +52,7 @@ module BF
         update!(order_acceptance_id: order_acceptance_id, status: :requested)
       rescue => e
         update!(error_trace: e.inspect, status: :error)
+        trade_ship.sell_trade.canceled!
         return self
       end
       SellingTradeWorker.perform_async(self.id)

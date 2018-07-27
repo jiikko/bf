@@ -8,6 +8,7 @@ RSpec.describe BF::MyTrade do
         buy_trade = BF::MyTrade.new.run_buy_trade!(1)
         expect(/DisparityOverError/ =~ buy_trade.error_trace).to be_a(Integer)
         expect(buy_trade.status).to eq('error')
+        expect(buy_trade.trade_ship.sell_trade.canceled?).to eq(true)
       end
     end
 
