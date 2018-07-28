@@ -16,6 +16,10 @@ module BF
   class DisparityFetcher
     def run
       loop do
+        unless Setting.record.enabled_calc_disparity
+          sleep(10)
+          next
+        end
         begin
           Resque.redis.set(BF::Monitor::FETCH_DISPARITY_KEY, BF::Client.new.get_disparity)
         rescue => e

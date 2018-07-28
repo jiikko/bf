@@ -6,6 +6,7 @@ class CreateSetting < ActiveRecord::Migration[5.1]
       t.integer :max_scalping_worker_count, null: false, default: 1
       t.float :order_size, null: false, default: 0.01
       t.integer :price_range, null: false, default: 400
+      t.boolean :enabled_calc_disparity, null: false, default: false
       t.timestamps null: false
     end
   end
