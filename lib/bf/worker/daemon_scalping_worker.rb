@@ -7,16 +7,20 @@ module BF
     def perform
       loop do
         run
-        sleep(2)
+        sleep(10)
       end
     end
 
     def run
       unless BF::Setting.enabled_daemon_sclping_worker?
+        BF.logger.info "設定によって無効になっているのでちょっとsleepします"
+        sleep(50)
         return
       end
       # キューに入っているか || Task.runingで検出される前の状態のタイミングを伺っている状態か
       if BF::ScalpingWorker.queueing? || BF::ScalpingWorker.doing?
+        BF.logger.info "BF::ScalpingWorker.queueing? || BF::ScalpingWorker.doing? のどちらかがtrueなのでちょっとsleepします"
+        sleep(50)
         return
       end
       if BF::ScalpingTask.running.count.zero?
