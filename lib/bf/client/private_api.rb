@@ -107,8 +107,11 @@ module BF
         response = super(path: "/v1/me/getexecutions",
                          http_class: Net::HTTP::Get,
                          query: "product_code=#{BTC_FX_PRODUCT_CODE}&#{order_query}")
-        order = response.first
-        order.slice('child_order_id', 'child_order_acceptance_id', 'exec_date', 'id', 'price', 'size') if order.present?
+        if order.present?
+          response.map do |order|
+            order.slice('child_order_id', 'child_order_acceptance_id', 'exec_date', 'id', 'price', 'size')
+          end
+        end
       end
 
       def http_method
