@@ -146,10 +146,11 @@ RSpec.describe BF::MyTrade do
     end
     context 'レスポンスのsizeが注文時のsizeと同じ時' do
       it 'trueを返すこと' do
-        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 0.1)
+        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 0.05)
         api_client = double(:api_client)
         allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
-          [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.1}]
+          [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.006},
+           {"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.044}]
         end
         allow(buy_trade).to receive(:api_client).and_return(api_client)
         expect(buy_trade.trade_sccessd?).to eq(true)
@@ -157,11 +158,10 @@ RSpec.describe BF::MyTrade do
     end
     context 'レスポンスのsizeが注文時のsizeよりも小さい時' do
       it 'falseを返すこと' do
-        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 0.1)
+        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 1.05)
         api_client = double(:api_client)
         allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
-          [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.05},
-           {"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.04}]
+          [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.006}]
         end
         allow(buy_trade).to receive(:api_client).and_return(api_client)
         expect(buy_trade.trade_sccessd?).to eq(false)

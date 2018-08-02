@@ -100,7 +100,7 @@ module BF
       case
       when order_acceptance_id
         response = get_order
-        self.size == response.map { |x| x['size'] }.sum
+        self.size == response.map { |x| x['size'] }.sum.ceil(6)
       else
         raise('order_acceptance_id がありません')
       end
