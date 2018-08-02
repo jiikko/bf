@@ -27,8 +27,7 @@ module BF
         do_enqueue
         return
       else
-        BF.logger.info "実行中(BF::ScalpingTask.running)のタスクがいるのでsleepします"
-        return
+        BF.logger.info "実行中(BF::ScalpingTask.running)のタスクがいるのでenqueしません"
       end
 
       # 通常は1つのみを稼働するけど設定値によっては複数個稼働する

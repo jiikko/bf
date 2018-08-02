@@ -99,7 +99,7 @@ module BF
     def trade_sccessd?
       case
       when order_acceptance_id
-        response = api_client.get_order(order_acceptance_id: order_acceptance_id)
+        response = get_order
         response.present?
       else
         raise('order_acceptance_id がありません')
@@ -143,7 +143,7 @@ module BF
     end
 
    def get_order
-     api_client.get_order(order_id: order_id)
+     api_client.get_order(order_acceptance_id: order_acceptance_id)
    end
 
     private
