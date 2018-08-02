@@ -9,7 +9,14 @@ module BF
         if ship.buy_trade.error?
           ship.sell_trade.canceled!
         end
-        if ship.sell_trade.trade_sccessd?
+        is_trade_sccessd =
+          begin
+            ship.sell_trade.trade_sccessd?
+          rescue => e
+            puts e.full_message
+            false
+          end
+        if is_trade_sccessd
           ship.sell_trade.succeed!
         end
       end
