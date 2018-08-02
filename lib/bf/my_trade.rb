@@ -100,7 +100,7 @@ module BF
       case
       when order_acceptance_id
         response = get_order
-        response.present?
+        self.size == response['size']
       else
         raise('order_acceptance_id がありません')
       end

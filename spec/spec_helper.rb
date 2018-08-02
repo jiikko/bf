@@ -5,6 +5,7 @@ require "pry"
 require "bf"
 require "resque_spec"
 require "support/factory"
+require "support/resque_spec_ext"
 
 RSpec.configure do |config|
   config.before(:each) do

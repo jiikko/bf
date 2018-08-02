@@ -99,8 +99,6 @@ module BF
     end
 
     class GetOrderRequest < BaseRequest
-      # order status
-      # => 'ACTIVE', 'COMPLETED', 'CANCELED', 'EXPIRED', 'REJECTED'
       def run(order_acceptance_id: nil)
         if order_acceptance_id.nil?
           raise 'order_acceptance_idがありません'
