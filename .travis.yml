@@ -3,7 +3,7 @@ language: ruby
 rvm:
   - 2.5.0
 services:
-  - mysql
+  - redis-server
 before_install:
   - gem install bundler -v 1.16.1
   - mysql -e 'CREATE DATABASE bf_cli_test;'
