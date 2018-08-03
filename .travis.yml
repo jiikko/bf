@@ -2,4 +2,8 @@ sudo: false
 language: ruby
 rvm:
   - 2.5.0
-before_install: gem install bundler -v 1.16.1
+services:
+  - mysql
+before_install:
+  - gem install bundler -v 1.16.1
+  - mysql -e 'CREATE DATABASE bf_cli_test;'
