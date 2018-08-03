@@ -1,4 +1,7 @@
 # BF
+
+[![Build Status](https://travis-ci.org/jiikko/bf.svg?branch=master)](https://travis-ci.org/jiikko/bf)
+
 * ビットフライヤーのpublic apiから取得した最終取引価格を1~60分の間隔で集計する
 * 注文できる
 
@@ -41,8 +44,6 @@ The gem is available as open source under the terms of the [MIT License](https:/
   * 買いが失敗した旨のログとか、アクションが必要な旨のログも見れるようにする
 * タイムアウトを迎えて注文をキャンセルする時は、最終取引価格が近い時はキャンセルをしない
   * キャンセル注文と送った直後に成約すると売り注文が走らなくなるため
-* 約定の判定にリストが返ってくれば約定、としているが、分割して約定する場合おかしくなうｒ
-  * 約低判定には個数も考慮する
 
 ## 買い注文を入れるロジック
 * 上上上上
