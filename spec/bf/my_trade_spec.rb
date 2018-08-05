@@ -36,8 +36,7 @@ RSpec.describe BF::MyTrade do
     context '買いの約定待ちに 買い注文が canceled? になった時' do
       it '買い売り注文を売り出さずにキャンセルステータスにする' do
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
-        # 約定待ちになってほしいのでACTIVEを返す
-        allow_any_instance_of(BF::Client).to receive(:get_order).and_return([{size: 1}])
+        allow_any_instance_of(BF::Client).to receive(:get_order).and_return([{'size'=> 1}])
         allow_any_instance_of(BF::MyTrade).to receive(:canceled?) { true }
         buy_trade = BF::MyTrade.new.run_buy_trade!(300)
         ResqueSpec.run!('normal')
@@ -151,6 +150,17 @@ RSpec.describe BF::MyTrade do
         allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
           [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.006},
            {"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.044}]
+        end
+        allow(buy_trade).to receive(:api_client).and_return(api_client)
+        expect(buy_trade.trade_sccessd?).to eq(true)
+      end
+
+      it 'trueを返すこと' do
+        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 0.3)
+        api_client = double(:api_client)
+        allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
+          [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.29477297},
+           {"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.00522703}]
         end
         allow(buy_trade).to receive(:api_client).and_return(api_client)
         expect(buy_trade.trade_sccessd?).to eq(true)
