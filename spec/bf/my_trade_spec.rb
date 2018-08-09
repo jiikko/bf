@@ -141,29 +141,34 @@ RSpec.describe BF::MyTrade do
         allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once { [] }
         allow(buy_trade).to receive(:api_client).and_return(api_client)
         expect(buy_trade.trade_sccessd?).to eq(false)
+        expect(buy_trade.waiting_to_request?).to eq(true)
       end
     end
     context 'レスポンスのsizeが注文時のsizeと同じ時' do
-      it 'trueを返すこと' do
-        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 0.05)
-        api_client = double(:api_client)
-        allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
-          [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.006},
-           {"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.044}]
+      describe '桁落ちしない確認' do
+        it 'trueを返すこと' do
+          buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 0.05)
+          api_client = double(:api_client)
+          allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
+            [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.006},
+             {"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.044}]
+          end
+          allow(buy_trade).to receive(:api_client).and_return(api_client)
+          expect(buy_trade.trade_sccessd?).to eq(true)
+          expect(buy_trade.waiting_to_request?).to eq(true)
         end
-        allow(buy_trade).to receive(:api_client).and_return(api_client)
-        expect(buy_trade.trade_sccessd?).to eq(true)
-      end
 
-      it 'trueを返すこと' do
-        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 0.3)
-        api_client = double(:api_client)
-        allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
-          [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.29477297},
-           {"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.00522703}]
+        it 'trueを返すこと' do
+          buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 0.3)
+          api_client = double(:api_client)
+          allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
+            [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.29477297},
+             {"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.00522703}]
+          end
+          allow(buy_trade).to receive(:api_client).and_return(api_client)
+          expect(buy_trade.trade_sccessd?).to eq(true)
+          expect(buy_trade.waiting_to_request?).to eq(true)
         end
-        allow(buy_trade).to receive(:api_client).and_return(api_client)
-        expect(buy_trade.trade_sccessd?).to eq(true)
       end
     end
     context 'レスポンスのsizeが注文時のsizeよりも小さい時' do
@@ -175,6 +180,7 @@ RSpec.describe BF::MyTrade do
         end
         allow(buy_trade).to receive(:api_client).and_return(api_client)
         expect(buy_trade.trade_sccessd?).to eq(false)
+        expect(buy_trade.parted_trading?).to eq(true)
       end
     end
   end

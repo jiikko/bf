@@ -13,6 +13,7 @@ module BF
       :canceled,
       :canceled_before_request,
       :selling,
+      :parted_trading,
     ]
     RUNNING_STATUS_FOR_BUY = [
       :waiting_to_request, :requested,
@@ -100,7 +101,13 @@ module BF
       case
       when order_acceptance_id
         response = get_order
-        self.size == (response.map { |x| x['size'] * 100_000 }.sum / 100_000).floor(7)
+        return false if response.empty?
+        if self.size == (response.map { |x| x['size'] * 100_000 }.sum / 100_000).floor(7)
+          return true
+        else
+          self.parted_trading! unless parted_trading?
+          return false
+        end
       else
         raise('order_acceptance_id がありません')
       end
@@ -116,7 +123,7 @@ module BF
         end
         if trade_sccessd?
           BF::logger.info '約定を確認しました。これから売りを発注します。'
-          succeed!
+          self.succeed!
           break
         end
         if canceled?
