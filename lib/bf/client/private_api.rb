@@ -33,7 +33,7 @@ module BF
       end
 
       def uri
-        @uri ||= URI.parse("https://#{END_POINT}")
+        @uri ||= URI.parse(END_POINT)
       end
 
       def run(path: , http_class: , query: nil)

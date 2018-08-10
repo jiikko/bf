@@ -31,7 +31,7 @@ require "bf/summarized_my_trade"
 module BF
   class DisparityOverError < StandardError; end
 
-  END_POINT = 'api.bitflyer.jp'
+  END_POINT = 'https://api.bitflyer.jp'
   BTC_FX_PRODUCT_CODE = 'FX_BTC_JPY'
   BTC_PRODUCT_CODE    = 'BTC_JPY'
 
