@@ -1,12 +1,16 @@
 # BF
-
 [![Build Status](https://travis-ci.org/jiikko/bf.svg?branch=master)](https://travis-ci.org/jiikko/bf)
 
 * BF板取引支援ライブラリ
 
 ## Installation
+set api key of bf.
 ```
-echo 'create database bf_cli_development' | mysql -uroot
+$ cp bf_config.sample.yaml bf_config.yaml
+$ edit bf_config.yaml
+```
+```
+$ echo 'create database bf_cli_development' | mysql -uroot
 ```
 
 ### Gemfile
@@ -23,7 +27,6 @@ COUNT=5 QUEUE=normal be rake resque:workers
 ```
 
 ## License
-
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 ## TODO
