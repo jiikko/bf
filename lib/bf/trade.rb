@@ -91,7 +91,7 @@ module BF
 
     def self.calculate_range(from)
       raise('not found arg of from') if from.nil?
-      prices = where(kind: :minutely, created_at: (from..Time.now)).pluck(:price)
+      prices = where(kind: :minutely, created_at: (from..Time.current)).pluck(:price)
       deviation_value_table = {}
       return [0, 0] if prices.empty?
       mean = prices.sum / prices.size

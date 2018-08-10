@@ -4,7 +4,7 @@ RSpec.describe BF::SummarizedMyTrade do
   describe 'summarize!' do
     it '集計できること' do
       prev_day = 1.day.ago
-      today = Time.now
+      today = Time.current
       Factory.create_my_trade_ship(created_at: 3.days.ago)
       Factory.create_my_trade_ship(created_at: today)
       Factory.create_my_trade_ship(created_at: prev_day)
@@ -30,7 +30,7 @@ RSpec.describe BF::SummarizedMyTrade do
     context '集計範囲を変更する時' do
       it '集計範囲を変更することができること' do
         prev_day = 1.day.ago
-        today = Time.now
+        today = Time.current
         Factory.create_my_trade_ship(created_at: 3.days.ago)
         Factory.create_my_trade_ship(created_at: today)
         Factory.create_my_trade_ship(created_at: prev_day)

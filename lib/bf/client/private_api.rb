@@ -25,7 +25,7 @@ module BF
       end
 
       def timestamp
-        @timestamp ||= Time.now.to_i.to_s
+        @timestamp ||= Time.current.to_i.to_s
       end
 
       def http_method
