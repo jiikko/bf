@@ -1,6 +1,19 @@
 module BF
   class Fetcher
     def run
+      method_names = [
+        :fetch_trades,
+        :fetch_disparity,
+        :fetch_status,
+      ]
+      threads =
+        method_names.map do |method_name|
+          Thread.start { public_send(method_name) }
+        end
+      threads.each(&:join)
+    end
+
+    def fetch_trades
       loop do
         begin
           BF::Trade.fetch_with_clean
@@ -11,10 +24,8 @@ module BF
         end
       end
     end
-  end
 
-  class DisparityFetcher
-    def run
+    def fetch_disparity
       loop do
         unless Setting.record.enabled_calc_disparity
           sleep(10)
@@ -29,13 +40,11 @@ module BF
         end
       end
     end
-  end
 
-  class StatusFetcher
-    def run
+    def fetch_status
       loop do
         begin
-          Redis.new.set BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.new.current_status.to_json
+          Redis.new.set(BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.new.current_status.to_json)
           # Resque.redis.set BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.current_status
         rescue => e
           BF.logger.error(e.inspect + e.full_message)
