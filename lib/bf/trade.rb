@@ -55,7 +55,7 @@ module BF
 
     def self.fetch_with_clean
       fetch
-      where(kind: :minutely).where('created_at < ?', 5.day.ago).delete_all
+      where(kind: :minutely).where('created_at < ?', 2.day.ago).delete_all
     end
 
     def self.minutely_range
