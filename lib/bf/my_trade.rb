@@ -150,7 +150,7 @@ module BF
     end
 
    def get_order
-     api_client.get_order(order_acceptance_id: order_acceptance_id)
+     api_client.get_order(order_acceptance_id: order_acceptance_id) || []
    end
 
     private
