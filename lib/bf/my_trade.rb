@@ -16,7 +16,7 @@ module BF
       :parted_trading,
     ]
     RUNNING_STATUS_FOR_BUY = [
-      :waiting_to_request, :requested,
+      :waiting_to_request, :requested, :parted_trading,
     ]
     RUNNING_STATUS_FOR_SELL = [
       :waiting_to_sell, :selling,
