@@ -102,7 +102,7 @@ module BF
       when order_acceptance_id
         response = get_order
         return false if response.empty?
-        if self.size == (response.map { |x| x['size'] * 100_000 }.sum / 100_000).floor(7)
+        if self.size == (response.map { |x| BigDecimal.new(x['size'].to_s) }.sum.to_f)
           return true
         else
           self.parted_trading! unless parted_trading?
