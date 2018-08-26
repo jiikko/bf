@@ -6,6 +6,7 @@ RSpec.describe BF::Trade do
       allow_any_instance_of(Net::HTTP).to receive(:start) do
         OpenStruct.new(body: { 'ltp' => 8 }.to_json)
       end
+      BF::Trade.delete_all
       BF::Trade.fetch
       expect(BF::Trade.count).to eq(1)
     end

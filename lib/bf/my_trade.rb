@@ -61,6 +61,7 @@ module BF
     end
 
     def run_sell_trade!
+      self.sell_trade.reload
       return if canceled?
       begin
         order_acceptance_id = nil
@@ -102,14 +103,29 @@ module BF
       when order_acceptance_id
         response = get_order
         return false if response.empty?
-        if self.size == (response.map { |x| BigDecimal.new(x['size'].to_s) }.sum)
+        current_total_size = response.map { |x| BigDecimal.new(x['size'].to_s) }.sum
+        if self.size == current_total_size
           return true
         else
-          self.parted_trading! unless parted_trading?
-          return false
+          return self.run_sccessd_or_nothing!(current_total_size)
         end
       else
         raise('order_acceptance_id がありません')
+      end
+    end
+
+    # 部分取引のまま買値から1500円以上離れたら、買注文をキャンセルして部分買いのみの売り注文を出す
+    def run_sccessd_or_nothing!(current_total_size)
+      return false if sell?
+
+      if (self.price + 1500) < BF::Trade.last.price
+        BF.logger.info "部分取引中のBF::MyTrade(id: #{id})は、最終取引から1500円離れたので買い取り分のみで決済します"
+        self.class.where(id: [self.id, sell_trade.id]).update_all(size: current_total_size)
+        api_client.cancel_order(self.order_acceptance_id)
+        return true
+      else
+        self.parted_trading! unless parted_trading?
+        return false
       end
     end
 
