@@ -33,7 +33,7 @@ module BF
     end
 
     def self.tries_count
-      10
+      20
     end
 
     def running?
@@ -121,7 +121,9 @@ module BF
       if (self.price + 1500) < BF::Trade.last.price
         BF.logger.info "部分取引中のBF::MyTrade(id: #{id})は、最終取引から1500円離れたので買い取り分のみで決済します"
         self.class.where(id: [self.id, sell_trade.id]).update_all(size: current_total_size)
-        api_client.cancel_order(self.order_acceptance_id)
+        Retryable.retryable(tries: self.class.tries_count) do
+          api_client.cancel_order(self.order_acceptance_id)
+        end
         return true
       else
         self.parted_trading! unless parted_trading?
