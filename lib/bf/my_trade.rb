@@ -103,7 +103,7 @@ module BF
       when order_acceptance_id
         response = get_order
         return false if response.empty?
-        current_total_size = response.map { |x| BigDecimal.new(x['size'].to_s) }.sum
+        current_total_size = response.map { |x| BigDecimal.new(x['size'].to_s) }.sum.to_f
         if self.size == current_total_size
           return true
         else
