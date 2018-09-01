@@ -62,7 +62,9 @@ module BF
     # postだと二重注文になる可能性があるので注文では使わない
     def retry_with
       begin
-        return yield
+        Timeout.timeout(1) do
+          return yield
+        end
       rescue RuntimeError => e
         BF.logger.error(e.inspect + e.full_message)
         false
