@@ -27,7 +27,7 @@ module BF
     end
 
     def cancel_order(order_acceptance_id)
-      retry_with do
+      retry_with(timeout: 5) do
         CancelRequest.new.run(order_acceptance_id)
       end
     end
@@ -60,9 +60,9 @@ module BF
     private
 
     # postだと二重注文になる可能性があるので注文では使わない
-    def retry_with
+    def retry_with(timeout: 1)
       begin
-        Timeout.timeout(1) do
+        Timeout.timeout(timeout) do
           return yield
         end
       rescue RuntimeError => e
