@@ -47,8 +47,8 @@ module BF
     end
 
     def profit
-     sell = sell_trade.size * sell_trade.price rescue 0
-     buy  = buy_trade.size * buy_trade.price rescue 0
+     sell = sell_trade.size * sell_trade.price rescue(return(nil))
+     buy  = buy_trade.size * buy_trade.price rescue(return(nil))
      sell - buy
     end
 
