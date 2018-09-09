@@ -60,7 +60,7 @@ module BF
     private
 
     # postだと二重注文になる可能性があるので注文では使わない
-    def retry_with(timeout: 1)
+    def retry_with(timeout: 2)
       begin
         Timeout.timeout(timeout) do
           return yield

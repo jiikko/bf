@@ -49,7 +49,12 @@ module BF
 
     def self.fetch
       if BF::Setting.enable_fetch?
-        create!(kind: :minutely, price: BF::Client.new.get_ticker['ltp'] || 0)
+        value = BF::Client.new.get_ticker || { 'ltp' => 0 }
+        if value
+          create!(kind: :minutely, price: value['ltp'])
+        else
+          BF.logger.info('最終取引の取得に失敗しました')
+        end
       end
     end
 
