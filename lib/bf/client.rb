@@ -21,30 +21,30 @@ module BF
     end
 
     def get_order(order_acceptance_id: nil)
-      retry_with do
+      retry_with(from: :get_order) do
         GetOrderRequest.new.run(order_acceptance_id: order_acceptance_id)
       end
     end
 
     def cancel_order(order_acceptance_id)
-      retry_with(timeout: 5) do
+      retry_with(from: :cancel_order, timeout: 10) do
         CancelRequest.new.run(order_acceptance_id)
       end
     end
 
     def get_state
-      retry_with do
+      retry_with(from: :get_state) do
         PublicApi.new.get_public_api("/v1/getboardstate", BTC_FX_PRODUCT_CODE) || {}
       end
     end
 
     def get_disparity
       fx =
-        retry_with do
+        retry_with(from: :get_disparity_fx) do
           (PublicApi.new.get_public_api("/v1/getboard", BTC_FX_PRODUCT_CODE) || {})['mid_price']
         end
       btc =
-        retry_with do
+        retry_with(from: :get_disparity) do
           (PublicApi.new.get_public_api("/v1/getboard", BTC_PRODUCT_CODE) || {})['mid_price']
         end
       (fx || (return(100))) && (btc || (return(100)))
@@ -52,7 +52,7 @@ module BF
     end
 
     def get_ticker
-      retry_with do
+      retry_with(from: :get_ticker) do
         PublicApi.new.get_public_api("/v1/ticker", BTC_FX_PRODUCT_CODE) || {}
       end
     end
@@ -60,14 +60,12 @@ module BF
     private
 
     # postだと二重注文になる可能性があるので注文では使わない
-    def retry_with(timeout: 2)
+    def retry_with(timeout: 2, from: nil)
+      retry_count = 0
       begin
         Timeout.timeout(timeout) do
           return yield
         end
-      rescue RuntimeError => e
-        BF.logger.error(e.inspect + e.full_message)
-        false
       rescue OpenSSL::SSL::SSLError,
           Net::HTTPBadResponse,
           Errno::ECONNRESET,
@@ -75,17 +73,32 @@ module BF
           Errno::ETIMEDOUT,
           Errno::EHOSTUNREACH,
           SocketError => e
-        BF.logger.error(e.inspect + e.full_message)
-        sleep(3)
+        BF.logger.error("[#{from}]" + e.inspect + e.full_message)
+        sleep(2)
         retry
       rescue JSON::ParserError
         sleep(3)
         retry # メンテナンス中だとHTMLが返ってきてparseが失敗するので
-      rescue Timeout::Error, Net::OpenTimeout => e
-        BF.logger.error(e.inspect + e.full_message)
-        sleep(5)
-        retry
+      rescue Timeout::Error => e
+        BF.logger.error("[#{from}]" + e.inspect + e.full_message)
+        sleep(sleep_count_when_timeout)
+        retry_count += 1
+        if retry_count < 5
+          BF.logger.info("[#{from}]" + 'retry!')
+          retry
+        else
+          {}
+        end
+      rescue RuntimeError => e
+        BF.logger.error("[#{from}]" + e.inspect + e.full_message)
+        false
+      rescue
+        BF.logger.error("[#{from}]" + e.inspect + e.full_message)
       end
+    end
+
+    def sleep_count_when_timeout
+      2
     end
   end
 end

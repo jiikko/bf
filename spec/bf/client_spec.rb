@@ -49,14 +49,24 @@ RSpec.describe BF::Client do
   end
 
   describe '#get_health' do
-    it do
-      result = nil
-      begin
-        result = BF::Client.new.get_state.keys.sort
-      rescue => e
-        skip "オフラインの可能性があります(#{})"
+    context 'タイムアウトになる時' do
+      it 'retryすること' do
+        allow_any_instance_of(Net::HTTP).to receive(:request) { raise(Timeout::Error) }
+        allow_any_instance_of(BF::Client).to receive(:sleep_count_when_timeout) { 0 }
+        state = BF::Client.new.get_state
+        expect(state).to eq({})
       end
-      expect(result).to eq(['state', 'health'].sort)
+    end
+    context '成功する時' do
+      it do
+        result = nil
+        begin
+          result = BF::Client.new.get_state.keys.sort
+        rescue => e
+          skip "オフラインの可能性があります(#{})"
+        end
+        expect(result).to eq(['state', 'health'].sort)
+      end
     end
   end
 
