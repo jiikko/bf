@@ -56,7 +56,7 @@ module BF
         https = Net::HTTP.new(uri.host, uri.port)
         https.use_ssl = true
         response = https.request(options)
-        BF.logger.info "#{http_method}: #{uri.request_uri}?#{body}, response_body: #{response.body}"
+        BF.logger.info "#{http_method}: #{uri.request_uri}?#{body}, response_body: #{response.body.presence || []}, response_code: #{response.code}"
         if response.body.empty?
           return response.code
         else
