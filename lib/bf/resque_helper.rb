@@ -1,5 +1,30 @@
 module BF
   module ResqueHelper
+    module Process
+      def kill_one(pid)
+        pppid = workers.map(&:pid).find { |ppid| ppid == pid.to_i }
+        kill(pppid) if pppid.present?
+        pppid
+      end
+
+      def kill_all
+        pids = workers.select { |w| w.job.present? }.map(&:pid)
+        pids.each { |pid| kill(pid) }
+      end
+
+      private
+
+      def workers
+        Resque.workers
+      end
+
+      def kill(pid)
+        ::Process.kill(:USR1, pid)
+      end
+    end
+
+    extend Process
+
     class << self
       def queueing?(name='normal', jobname, args)
         # TODO
