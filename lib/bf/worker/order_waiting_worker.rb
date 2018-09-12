@@ -5,12 +5,12 @@ module BF
       loop do
         sell_trade.reload
         case
+        when sell_trade.canceled?
+          BF.logger.info 'キャンセルされました。'
+          break
         when sell_trade.trade_sccessd?
           sell_trade.succeed!
           BF.logger.info '売りを確認しました。'
-          break
-        when sell_trade.canceled?
-          BF.logger.info 'キャンセルされました。'
           break
         else
           sleep(30)
