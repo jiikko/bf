@@ -118,7 +118,7 @@ module BF
     def run_sccessd_or_nothing!(current_total_size)
       return false if sell?
 
-      if (self.price + 1500) < BF::Trade.last.price
+      if (self.price + 600) < BF::Trade.last.price
         BF.logger.info "部分取引中のBF::MyTrade(id: #{id})は、最終取引から1500円離れたので買い取り分のみで決済します"
         self.class.where(id: [self.id, sell_trade.id]).update_all(size: current_total_size)
         Retryable.retryable(tries: self.class.tries_count) do
