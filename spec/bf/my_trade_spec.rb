@@ -183,14 +183,14 @@ RSpec.describe BF::MyTrade do
           api_client = double(:api_client)
           allow(api_client).to receive(:cancel_order).with('2').once
           allow(api_client).to receive(:get_order).with(order_acceptance_id: '2').once do
-            [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.006}]
+            [{"child_order_id"=>"123", "child_order_acceptance_id"=>"445", "exec_date"=>"2018-08-01T23:57:10.803", "id"=>1, "price"=>10, "size"=>0.01971598}]
           end
           allow(buy_trade).to receive(:api_client).and_return(api_client)
           expect(buy_trade.trade_sccessd?).to eq(true)
           buy_trade.reload
           expect(buy_trade.parted_trading?).to eq(false)
-          expect(buy_trade.size).to eq(0.006)
-          expect(buy_trade.sell_trade.size).to eq(0.006)
+          expect(buy_trade.size).to eq(0.01971598)
+          expect(buy_trade.sell_trade.size).to eq(0.01971598)
           expect(buy_trade.price).to eq(10)
           expect(buy_trade.sell_trade.price).to eq(410)
         end
