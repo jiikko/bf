@@ -5,7 +5,7 @@ RSpec.describe BF::Scalping::Makiami do
         scalping = BF::Scalping::Makiami.new
         allow(scalping).to receive(:valid?).and_return(true)
         allow_any_instance_of(BF::Client).to receive(:buy).and_return(1)
-        trade = BF::Trade.create!(price: 3, kind: :minutely)
+        trade = BF::Trade.create!(price: 3)
         scalping.scalp
         expect(BF::MyTradeShip.count).to eq(4)
         expect(BF::ScalpingTask.count).to eq(4)

@@ -45,13 +45,11 @@ module BF
       daily: 1.day,
     }
 
-    enum kind: RANGE_CONST.keys
-
     def self.fetch
       if BF::Setting.enable_fetch?
         value = BF::Client.new.get_ticker || { 'ltp' => 0 }
         if value
-          create!(kind: :minutely, price: value['ltp'])
+          create!(price: value['ltp'])
         else
           BF.logger.info('最終取引の取得に失敗しました')
         end
@@ -60,7 +58,7 @@ module BF
 
     def self.fetch_with_clean
       fetch
-      where(kind: :minutely).where('created_at < ?', 2.day.ago).delete_all
+      where('created_at < ?', 2.day.ago).delete_all
     end
 
     def self.minutely_range
@@ -96,7 +94,7 @@ module BF
 
     def self.calculate_range(from)
       raise('not found arg of from') if from.nil?
-      prices = where(kind: :minutely, created_at: (from..Time.current)).pluck(:price)
+      prices = where(created_at: (from..Time.current)).pluck(:price)
       deviation_value_table = {}
       return [0, 0] if prices.empty?
       mean = prices.sum / prices.size

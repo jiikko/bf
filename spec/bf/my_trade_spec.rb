@@ -174,7 +174,7 @@ RSpec.describe BF::MyTrade do
     context 'レスポンスのsizeが注文時のsizeよりも小さい時' do
       context '最終取引価格から離れていない時' do
         it 'trueを返すこと, 取引量が約定分になっていること' do
-          BF::Trade.create!(kind: :minutely, price: 2000)
+          BF::Trade.create!(price: 2000)
           buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '2', status: 0, price: 10, size: 1.05)
           buy_trade.save! && buy_trade.send(:create_sell_trade!)
           expect(buy_trade.size).to eq(1.05)

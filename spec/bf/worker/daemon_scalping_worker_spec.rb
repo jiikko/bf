@@ -93,7 +93,7 @@ RSpec.describe BF::DaemonScalpingWorker do
         context '最新taskの取引価格と現在価格が2万離れている時' do
           before do
             # 最終取引価格が7万
-            BF::Trade.create!(price: 70_000, kind: :minutely)
+            BF::Trade.create!(price: 70_000)
             expect(BF::ScalpingTask.running.gap_price_from_current_to_last).to eq(20_000)
           end
           it 'do do_enqueue(in queue yet)' do
@@ -107,7 +107,7 @@ RSpec.describe BF::DaemonScalpingWorker do
         context '最新taskの取引価格と現在価格が5千離れている時' do
           before do
             # 最終取引価格が7万
-            BF::Trade.create!(price: 85_000, kind: :minutely)
+            BF::Trade.create!(price: 85_000)
             expect(BF::ScalpingTask.running.gap_price_from_current_to_last).to eq(5_000)
           end
           it 'do not do_enqueue' do

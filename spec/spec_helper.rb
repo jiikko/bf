@@ -11,7 +11,7 @@ RSpec.configure do |config|
   config.before(:each) do
     ResqueSpec.reset!
     BF::Trade.delete_all
-    BF::Trade.create!(kind: :minutely, price: 0)
+    BF::Trade.create!(price: 0)
     ActiveRecord::Base.connection.begin_transaction
   end
   config.after(:each) do
