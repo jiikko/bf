@@ -41,7 +41,7 @@ module BF
     end
 
     def current_status_from_datastore
-      s = Redis.new.get(FETCH_STATUS_KEY)
+      s = Resque.redis.get(FETCH_STATUS_KEY)
       if s
         JSON.parse(s)
       end

@@ -44,8 +44,7 @@ module BF
     def fetch_status
       loop do
         begin
-          Redis.new.set(BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.new.current_status.to_json)
-          # Resque.redis.set BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.current_status
+          Resque.redis.set(BF::Monitor::FETCH_STATUS_KEY, BF::Monitor.new.current_status.to_json)
         rescue => e
           BF.logger.error(e.inspect + e.full_message)
         ensure
