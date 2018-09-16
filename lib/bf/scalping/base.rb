@@ -12,7 +12,7 @@ module BF
           return false
         end
 
-        unless store_status_ok?
+        unless BF::Monitor.new.store_status_green?
           BF.logger.debug 'サーバに負荷がかかっているので中止しました'
           return false
         end
@@ -23,11 +23,6 @@ module BF
       def over_disparity?
         disparity = BF::Monitor.new.current_disparity_from_datastore
         disparity >= BF::STOP_DISPARITY_LIMIT
-      end
-
-      def store_status_ok?
-        health_number = BF::Monitor.state_const_with_number[BF::Monitor.new.current_status_from_datastore['health']]
-        health_number == 5
       end
     end
   end

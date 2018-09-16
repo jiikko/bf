@@ -35,6 +35,11 @@ module BF
       (Resque.redis.get(FETCH_DISPARITY_KEY) || 999).to_f
     end
 
+    def store_status_green?
+      health_number = BF::Monitor.state_const_with_number[BF::Monitor.new.current_status_from_datastore['health']]
+      health_number == 5
+    end
+
     def current_status_from_datastore
       s = Redis.new.get(FETCH_STATUS_KEY)
       if s
