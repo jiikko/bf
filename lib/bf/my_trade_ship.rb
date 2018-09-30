@@ -25,7 +25,7 @@ module BF
       inner join #{BF::MyTrade.table_name} sell_table
         on #{BF::MyTradeShip.table_name}.sell_trade_id = sell_table.id
       SQL
-      joins(join_sql).where(
+      from("#{self.table_name} use index(primary)").joins(join_sql).where(
         "sell_table.status = :status and buy_table.status = :status",
         status: BF::MyTrade.statuses[:succeed]
       )
