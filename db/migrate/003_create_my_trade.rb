@@ -11,6 +11,7 @@ class CreateMyTrade < ActiveRecord::Migration[5.1]
       t.text :params
 
       t.timestamps null: false
+      t.index [:kind, :status, :updated_at]
     end
   end
 end

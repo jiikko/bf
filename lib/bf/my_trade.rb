@@ -36,6 +36,10 @@ module BF
       20
     end
 
+    def self.last_sell_succeed_at
+      BF::MyTrade.where(kind: :sell, status: self.statuses[:succeed]).maximum(:updated_at)
+    end
+
     def running?
       case kind.to_sym
       when :buy

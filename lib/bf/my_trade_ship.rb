@@ -38,6 +38,10 @@ module BF
       my_trade_ships.uniq
     }
 
+    def self.last_succeed_at
+      BF::MyTrade.last_sell_succeed_at
+    end
+
     def running?
       buy_trade.running? || sell_trade.running?
     end
