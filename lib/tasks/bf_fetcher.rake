@@ -1,16 +1,16 @@
-# rake bf:fetcher:run
+# rake bf:daemon:run
 
 namespace :bf do
-  namespace :fetcher do
-    desc "run fetcher process"
+  namespace :daemon do
+    desc "run daemon process"
     task :run do
       require 'bf'
-      puts 'start fetcher process'
+      puts 'start daemon process'
       unless defined?(Rails)
         cli = BF::CLI.new
         cli.db_connect!
       end
-      BF::Fetcher.new.run
+      BF::Daemon.new.run
     end
   end
 end
