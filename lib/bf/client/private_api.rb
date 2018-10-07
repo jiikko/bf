@@ -77,7 +77,7 @@ module BF
         end
       rescue => e
         BF::ApiCallLog.create!(api_type: :private_api,
-                               request_body: "#{http_method}: #{uri.request_uri}?#{response.body}",
+                               request_body: "#{http_method}: #{uri.request_uri}?#{response&.body}",
                                error_trace:  [e.inspect + e.full_message].join("\n"),
                                response_code: response&.code,
                                response_body: (response&.body && response.body[0..100]))
