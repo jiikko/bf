@@ -29,7 +29,7 @@ module BF
     has_one :buy_trade, class_name: 'BF::MyTrade', through: :trade_ship, source: :buy_trade
 
     def self.find_by_sell(trade_id)
-      BF::MyTrade.find_by(kind: :sell, id: trade_id)
+      find_by(kind: :sell, id: trade_id)
     end
 
     def self.tries_count
@@ -37,7 +37,7 @@ module BF
     end
 
     def self.last_sell_succeed_at
-      BF::MyTrade.where(kind: :sell, status: self.statuses[:succeed]).maximum(:updated_at)
+      where(kind: :sell, status: self.statuses[:succeed]).maximum(:updated_at)
     end
 
     def running?
