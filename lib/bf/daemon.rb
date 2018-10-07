@@ -1,10 +1,11 @@
 module BF
-  class Fetcher
+  class Daemon
     def run
       method_names = [
         :fetch_trades,
         :fetch_disparity,
         :fetch_status,
+        :clean_old_api_call_logs,
       ]
       threads =
         method_names.map do |method_name|
@@ -50,6 +51,13 @@ module BF
         ensure
           sleep(5)
         end
+      end
+    end
+
+    def clean_old_api_call_logs
+      loop do
+        BF::ApiCallLog.old.delete_all
+        sleep(20)
       end
     end
   end
