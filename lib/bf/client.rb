@@ -27,7 +27,7 @@ module BF
     end
 
     def cancel_order(order_acceptance_id)
-      retry_with(from: :cancel_order, timeout: 10) do
+      retry_with(from: :cancel_order) do
         CancelRequest.new.run(order_acceptance_id)
       end
     end
@@ -60,12 +60,10 @@ module BF
     private
 
     # postだと二重注文になる可能性があるので注文では使わない
-    def retry_with(timeout: 2, from: nil)
+    def retry_with(from: nil)
       retry_count = 0
       begin
-        Timeout.timeout(timeout) do
-          return yield
-        end
+        return yield
       rescue OpenSSL::SSL::SSLError,
           Net::HTTPBadResponse,
           Errno::ECONNRESET,

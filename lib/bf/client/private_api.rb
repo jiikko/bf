@@ -36,7 +36,7 @@ module BF
         @uri ||= URI.parse(END_POINT)
       end
 
-      def run(path: , http_class: , query: nil)
+      def run(path: , http_class: , query: nil, timeout: 120)
         default_body = {
           product_code: BTC_FX_PRODUCT_CODE,
           child_order_type: 'LIMIT',
@@ -55,8 +55,9 @@ module BF
         options.body = body if block_given?
         https = Net::HTTP.new(uri.host, uri.port)
         https.use_ssl = true
-        response = https.request(options)
-        BF.logger.info "#{http_method}: #{uri.request_uri}?#{body}, response_body: #{response.body.presence || []}, response_code: #{response.code}"
+        response = Timeout.timeout(timeout) { https.request(options) }
+        request_summary = "#{http_method}: #{uri.request_uri}?#{body}, response_body: #{response.body.presence || []}, response_code: #{response.code}"
+        BF.logger.info request_summary
         if response.body.empty?
           return response.code
         else
@@ -92,7 +93,7 @@ module BF
 
     class CancelRequest < BaseRequest
       def run(order_acceptance_id)
-        super(path: '/v1/me/cancelchildorder', http_class: Net::HTTP::Post) do |body|
+        super(path: '/v1/me/cancelchildorder', http_class: Net::HTTP::Post, timeout: 10) do |body|
           body.merge({ child_order_acceptance_id: order_acceptance_id }).to_json
         end
       end
@@ -106,7 +107,8 @@ module BF
         order_query = "child_order_acceptance_id=#{order_acceptance_id}"
         response = super(path: "/v1/me/getexecutions",
                          http_class: Net::HTTP::Get,
-                         query: "product_code=#{BTC_FX_PRODUCT_CODE}&#{order_query}")
+                         query: "product_code=#{BTC_FX_PRODUCT_CODE}&#{order_query}",
+                         timeout: 2)
         if response.present?
           response.map do |order|
             order.slice('child_order_id', 'child_order_acceptance_id', 'exec_date', 'id', 'price', 'size')
