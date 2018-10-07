@@ -56,12 +56,15 @@ module BF
         https = Net::HTTP.new(uri.host, uri.port)
         https.use_ssl = true
         response = Timeout.timeout(timeout) { https.request(options) }
-        request_summary = "#{http_method}: #{uri.request_uri}?#{body}, response_body: #{response.body.presence || []}, response_code: #{response.code}"
-        BF.logger.info request_summary
+        BF.logger.info "#{http_method}: #{uri.request_uri}?#{body}, response_body: #{response.body.presence || []}, response_code: #{response.code}"
         if response.body.empty?
           return response.code
         else
           res = JSON.parse(response.body)
+          BF::ApiCallLog.create!(api_type: :private_api,
+                                 request_body: "#{uri.request_uri}?#{body}",
+                                 response_code: response.code,
+                                 response_body: response.body)
           if res.is_a?(Array) # for get order
             return res
           end
@@ -72,6 +75,13 @@ module BF
             raise(res['error_message'])
           end
         end
+      rescue => e
+        BF::ApiCallLog.create!(api_type: :private_api,
+                               request_body: "#{http_method}: #{uri.request_uri}?#{response.body}",
+                               error_trace:  [e.inspect + e.full_message].join("\n"),
+                               response_code: response&.code,
+                               response_body: response&.body)
+        raise
       end
     end
 

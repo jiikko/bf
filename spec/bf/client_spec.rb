@@ -72,7 +72,11 @@ RSpec.describe BF::Client do
 
   describe '#get_disparity' do
     it 'return disparity' do
+      allow_any_instance_of(Net::HTTP).to receive(:get) do
+        OpenStruct.new(body: "{\"mid_price\":3.0}")
+      end
       result = BF::Client.new.get_disparity
+      expect(BF::ApiCallLog.count).to eq(2)
       expect(result).to be_a(Float)
     end
   end

@@ -90,8 +90,9 @@ module BF
       rescue RuntimeError => e
         BF.logger.error("[#{from}]" + e.inspect + e.full_message)
         false
-      rescue
+      rescue => e
         BF.logger.error("[#{from}]" + e.inspect + e.full_message)
+        false
       end
     end
 
