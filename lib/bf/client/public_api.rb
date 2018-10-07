@@ -10,13 +10,13 @@ module BF
           Timeout.timeout(2) do
             https.start { |https| response = https.get(pt) }
           end
-        BF::ApiCallLog.create!(api_type: :private_api,
+        BF::ApiCallLog.create!(api_type: :public_api,
                                request_body: "GET: #{uri.request_uri}",
                                response_code: response.code,
                                response_body: response.body[0..100])
         JSON.parse(response.body)
       rescue => e
-        BF::ApiCallLog.create!(api_type: :private_api,
+        BF::ApiCallLog.create!(api_type: :public_api,
                               request_body: "GET: #{uri.request_uri}",
                               error_trace:  [e.inspect + e.full_message].join("\n"),
                               response_code: response&.code,
