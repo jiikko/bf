@@ -7,15 +7,13 @@ module BF
 
     scope :running, ->{
       join_sql = <<-SQL
-      inner join #{BF::MyTrade.table_name} buy_table
-        on  #{BF::MyTradeShip.table_name}.buy_trade_id = buy_table.id
       inner join #{BF::MyTrade.table_name} sell_table
         on #{BF::MyTradeShip.table_name}.sell_trade_id = sell_table.id
       SQL
       joins(join_sql).where(
-        "sell_table.status in (?) or buy_table.status in (?)",
+        "sell_table.status in (?) and sell_table.kind = ?",
         BF::MyTrade::RUNNING_STATUS_FOR_SELL.map { |x| BF::MyTrade.statuses[x] },
-        BF::MyTrade::RUNNING_STATUS_FOR_BUY.map { |x| BF::MyTrade.statuses[x] },
+        BF::MyTrade.kinds[:sell],
       )
     }
     scope :succeed, ->{
