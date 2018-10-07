@@ -64,7 +64,7 @@ module BF
           BF::ApiCallLog.create!(api_type: :private_api,
                                  request_body: "#{uri.request_uri}?#{body}",
                                  response_code: response.code,
-                                 response_body: response.body)
+                                 response_body: response.body[0..100])
           if res.is_a?(Array) # for get order
             return res
           end
@@ -80,7 +80,7 @@ module BF
                                request_body: "#{http_method}: #{uri.request_uri}?#{response.body}",
                                error_trace:  [e.inspect + e.full_message].join("\n"),
                                response_code: response&.code,
-                               response_body: response&.body)
+                               response_body: (response&.body && response.body[0..100]))
         raise
       end
     end
