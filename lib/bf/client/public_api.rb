@@ -5,11 +5,9 @@ module BF
         path_with_pc = "#{path}?PRODUCT_CODE=#{product_code}"
         uri = URI.parse(END_POINT)
         https = Net::HTTP.new(uri.host, 443)
+        https.read_timeout = https.open_timeout = https.ssl_timeout = 2
         https.use_ssl = true
-        response =
-          Timeout.timeout(2) do
-            https.start { |https| response = https.get(path_with_pc) }
-          end
+        response = https.start { |https| response = https.get(path_with_pc) }
         BF::ApiCallLog.create!(api_type: :public_api,
                                request_body: "GET: #{path_with_pc}",
                                response_code: response.code,

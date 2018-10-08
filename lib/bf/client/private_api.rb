@@ -54,8 +54,9 @@ module BF
         })
         options.body = body if block_given?
         https = Net::HTTP.new(uri.host, uri.port)
+        https.read_timeout = https.open_timeout = https.ssl_timeout= timeout
         https.use_ssl = true
-        response = Timeout.timeout(timeout) { https.request(options) }
+        response = https.request(options)
         BF.logger.info "#{http_method}: #{uri.request_uri}?#{body}, response_body: #{response.body.presence || []}, response_code: #{response.code}"
         if response.body.empty?
           return response.code
