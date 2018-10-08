@@ -143,15 +143,15 @@ module BF
           cancel_order_with_timeout!
           return
         end
-        if trade_sccessd?
-          BF::logger.info '約定を確認しました。これから売りを発注します。'
-          self.succeed!
-          break
-        end
         if canceled?
           BF.logger.info "買い注文をポーリングしていましたが#{status}だったので中止しました。売り注文を出していません。"
           sell_trade.canceled_before_request!
           return
+        end
+        if trade_sccessd?
+          BF::logger.info '約定を確認しました。これから売りを発注します。'
+          self.succeed!
+          break
         end
         sleep(1)
       end
