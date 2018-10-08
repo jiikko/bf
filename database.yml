@@ -5,7 +5,7 @@ mysql:
   password:
   database: bf_cli_development
   charset: utf8md4
-  pool: 3
+  pool: 4
 test:
   adapter: mysql2
   host: localhost
