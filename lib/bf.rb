@@ -28,6 +28,8 @@ require "bf/scalping/base"
 require "bf/scalping/unstable"
 require "bf/summarized_my_trade"
 require "bf/api_call_log"
+require "bf/preorder"
+require "bf/preorder_snapshot"
 
 module BF
   class DisparityOverError < StandardError; end

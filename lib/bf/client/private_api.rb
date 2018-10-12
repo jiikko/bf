@@ -54,7 +54,7 @@ module BF
         })
         options.body = body if block_given?
         https = Net::HTTP.new(uri.host, uri.port)
-        https.read_timeout = https.open_timeout = https.ssl_timeout= timeout
+        https.read_timeout = https.open_timeout = https.ssl_timeout = timeout
         https.use_ssl = true
         response = https.request(options)
         BF.logger.info "#{http_method}: #{uri.request_uri}?#{body}, response_body: #{response.body.presence || []}, response_code: #{response.code}"
@@ -126,6 +126,26 @@ module BF
           end
         else
           []
+        end
+      end
+
+      def http_method
+        :GET
+      end
+    end
+
+
+    class GetRegistratedOrders < BaseRequest
+      def run
+        response = super(path: "/v1/me/getchildorders",
+                         http_class: Net::HTTP::Get,
+                         query: "product_code=#{BTC_FX_PRODUCT_CODE}&child_order_state=ACTIVE",
+                         timeout: 10)
+        response.map do |hash|
+          { size: hash['size'],
+            price: hash['price'],
+            kind: hash['side'],
+          }
         end
       end
 
