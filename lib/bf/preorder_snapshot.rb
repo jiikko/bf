@@ -12,12 +12,8 @@ class BF::PreorderSnapshot < ::ActiveRecord::Base
 
   def import_to_bf!(id)
     preorders.each do |preorder|
-      api_client.buy(preorder.price, preorder.size)
+      preorder.call_buy_or_sell_api!
     end
     update!(restored: true)
-  end
-
-  def api_client
-    @api_client ||= BF::Client.new
   end
 end
