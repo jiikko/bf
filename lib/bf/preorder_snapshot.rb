@@ -2,6 +2,20 @@
 class BF::PreorderSnapshot < ::ActiveRecord::Base
   has_many :preorders
 
+  scope :summary, ->{
+    joins(:preorders).
+    group('preorder_snapshots.id',
+          'preorder_snapshots.created_at',
+          'memo').
+    select('sum(preorders.size) as sum_size',
+           'avg(preorders.price) as avg_price',
+           'count(case when kind=0 then 1 else null end ) as count_buy',
+           'count(case when kind=1 then 1 else null end ) as count_sell',
+           'preorder_snapshots.id',
+           'preorder_snapshots.created_at',
+           'memo')
+  }
+
   def export_from_bf!(memo: nil)
     list = BF::Preorder.current
     list.each do |hash|
