@@ -16,4 +16,8 @@ class BF::PreorderSnapshot < ::ActiveRecord::Base
     end
     update!(restored: true)
   end
+
+  def order_empty?
+    BF::Preorder.current.empty?
+  end
 end
