@@ -16,6 +16,10 @@ class BF::PreorderSnapshot < ::ActiveRecord::Base
            'memo')
   }
 
+  def self.order_empty?
+    BF::Preorder.current.empty?
+  end
+
   def export_from_bf!(memo: nil)
     list = BF::Preorder.current
     list.each do |hash|
@@ -28,9 +32,5 @@ class BF::PreorderSnapshot < ::ActiveRecord::Base
       preorder.call_buy_or_sell_api!
     end
     update!(restored: true)
-  end
-
-  def order_empty?
-    BF::Preorder.current.empty?
   end
 end
