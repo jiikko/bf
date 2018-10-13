@@ -2,11 +2,10 @@
 class BF::PreorderSnapshot < ::ActiveRecord::Base
   has_many :preorders
 
-  def self.export_from_bf!(memo: nil)
+  def export_from_bf!(memo: nil)
     list = BF::Preorder.current
-    record = self.create!(memo: memo)
     list.each do |hash|
-      record.preorders.create!(hash)
+      self.preorders.create!(hash)
     end
   end
 
