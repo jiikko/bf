@@ -8,9 +8,9 @@ class BF::Preorder < ::ActiveRecord::Base
   def call_buy_or_sell_api!
     case
     when buy?
-      api_client.buy(preorder.price, preorder.size)
+      api_client.buy(price, size)
     when sell?
-      api_client.sell(preorder.price, preorder.size)
+      api_client.sell(price, size)
     end
   end
 

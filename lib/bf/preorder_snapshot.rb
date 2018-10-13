@@ -27,7 +27,7 @@ class BF::PreorderSnapshot < ::ActiveRecord::Base
     end
   end
 
-  def import_to_bf!(id)
+  def import_to_bf!
     preorders.each do |preorder|
       preorder.call_buy_or_sell_api!
     end
