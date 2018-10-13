@@ -1,6 +1,6 @@
 # 日をまたぐときにスワップポイントを払いたくなくて一時的に手放したあとに注文を待避するためのモデル
 class BF::PreorderSnapshot < ::ActiveRecord::Base
-  has_many :preorders
+  has_many :preorders, dependent: :destroy
 
   scope :summary, ->{
     joins(:preorders).
