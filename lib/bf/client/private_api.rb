@@ -136,16 +136,20 @@ module BF
 
 
     class GetRegistratedOrders < BaseRequest
-      def run
+      def run(before_processing: false)
         response = super(path: "/v1/me/getchildorders",
                          http_class: Net::HTTP::Get,
                          query: "product_code=#{BTC_FX_PRODUCT_CODE}&child_order_state=ACTIVE",
                          timeout: 10)
-        response.map do |hash|
-          { size: hash['size'],
-            price: hash['price'],
-            kind: hash['side'],
-          }
+        if before_processing
+          response
+        else
+          response.map do |hash|
+            { size: hash['size'],
+              price: hash['price'],
+              kind: hash['side'].downcase,
+            }
+          end
         end
       end
 
