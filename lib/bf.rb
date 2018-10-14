@@ -8,28 +8,20 @@ require "resque"
 require "bf/version"
 require "bf/monitor"
 require "bf/client"
-require "bf/trade"
 require "bf/daemon"
 require "bf/cli"
-require "bf/scalping_task"
-require "bf/setting"
-require "bf/my_trade"
-require "bf/my_trade_ship"
-require "bf/worker/base_worker"
-require "bf/worker/order_waiting_worker"
-require "bf/worker/selling_trade_worker"
-require "bf/worker/scalping_worker"
-require "bf/worker/daemon_scalping_worker"
-require "bf/worker/remove_waiting_trade_worker"
-require "bf/worker/summarized_my_trade_worker"
-require "bf/initialize/resque"
 require "bf/resque_helper"
-require "bf/scalping/base"
-require "bf/scalping/unstable"
-require "bf/summarized_my_trade"
-require "bf/api_call_log"
-require "bf/preorder"
-require "bf/preorder_snapshot"
+load_dir = %w(
+  client
+  initialize
+  models
+  scalping
+  worker
+)
+load_dir.reduce([]) { |list, path|
+  filepath = File.join(File::expand_path('lib/bf'), path, "**.rb")
+  list.concat Dir.glob(filepath)
+}.each { |path| require path }
 
 module BF
   class DisparityOverError < StandardError; end
