@@ -19,7 +19,7 @@ load_dir = %w(
   worker
 )
 load_dir.reduce([]) { |list, path|
-  filepath = File.join(File::expand_path('lib/bf'), path, "**.rb")
+  filepath = File.join(File.expand_path("../bf", __FILE__), path, "**.rb")
   list.concat Dir.glob(filepath)
 }.each { |path| require path }
 
