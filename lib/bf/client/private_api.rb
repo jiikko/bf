@@ -63,9 +63,9 @@ module BF
         else
           res = JSON.parse(response.body)
           BF::ApiCallLog.create!(api_type: :private_api,
-                                 request_body: "#{uri.request_uri}?#{body}",
+                                 request_body: "#{uri.request_uri}?#{body && body[0..100]}",
                                  response_code: response.code,
-                                 response_body: response.body[0..100])
+                                 response_body: response.body && response.body[0..100])
           if res.is_a?(Array) # for get order
             return res
           end
@@ -78,7 +78,7 @@ module BF
         end
       rescue => e
         BF::ApiCallLog.create!(api_type: :private_api,
-                               request_body: "#{http_method}: #{uri.request_uri}?#{response&.body}",
+                               request_body: "#{http_method}: #{uri.request_uri}?",
                                error_trace:  [e.inspect + e.full_message].join("\n"),
                                response_code: response&.code,
                                response_body: (response&.body && response.body[0..100]))
