@@ -111,10 +111,7 @@ module BF
     end
 
     class GetOrderRequest < BaseRequest
-      def run(order_acceptance_id: nil)
-        if order_acceptance_id.nil?
-          raise 'order_acceptance_idがありません'
-        end
+      def run(order_acceptance_id: )
         order_query = "child_order_acceptance_id=#{order_acceptance_id}"
         response = super(path: "/v1/me/getexecutions",
                          http_class: Net::HTTP::Get,
