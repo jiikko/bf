@@ -32,7 +32,7 @@ module BF
       end
     end
 
-    def preorders(price: , size: )
+    def preorders
       retry_with(from: :preorders) do
         GetPreorderListRequest.new.run
       end
