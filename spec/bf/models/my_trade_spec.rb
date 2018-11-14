@@ -133,6 +133,44 @@ RSpec.describe BF::MyTrade do
     end
   end
 
+  describe '#resync' do
+    context '同額で同じサイズの注文が複数ヒットした時' do
+      it 'order_acceptance_idを上書きしないこと' do
+        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '0', status: 0, price: 10, size: 0.06)
+        buy_trade.save!
+        api_client = double(:api_client)
+        allow(api_client).to receive(:preorders).once do
+          [ { "child_order_acceptance_id"=>"1", "price"=>10.0, "size"=>0.06, side: 'BUY' },
+            { "child_order_acceptance_id"=>"2", "price"=>10.0, "size"=>0.06, side: 'BUY' },
+          ]
+        end
+        allow(buy_trade).to receive(:api_client).and_return(api_client)
+        buy_trade.resync!
+        buy_trade.reload
+        expect(buy_trade.order_acceptance_id).to eq('0')
+      end
+    end
+
+    context '注文を取り消してから同じ金額とサイズで注文をしている時' do
+      it 'order_acceptance_idを上書きすること' do
+        buy_trade = BF::MyTrade.new(kind: :buy, order_acceptance_id: '0', status: 0, price: 10, size: 0.06)
+        buy_trade.save!
+        api_client = double(:api_client)
+        allow(api_client).to receive(:preorders).once do
+          [ { "child_order_acceptance_id"=>"1", "price"=>10.0, "size"=>0.06, 'side' => 'SELL'},
+            { "child_order_acceptance_id"=>"2", "price"=>10.0, "size"=>0.44, 'side' => 'BUY' },
+            { "child_order_acceptance_id"=>"3", "price"=> 2.0, "size"=>0.06, 'side' => 'BUY' },
+            { "child_order_acceptance_id"=>"4", "price"=>10.0, "size"=>0.06, 'side' => 'BUY' },
+          ]
+        end
+        allow(buy_trade).to receive(:api_client).and_return(api_client)
+        buy_trade.resync!
+        buy_trade.reload
+        expect(buy_trade.order_acceptance_id).to eq('4')
+      end
+    end
+  end
+
   describe '#trade_sccessd?' do
     context 'レスポンスが空配列の時' do
       it 'falseを返すこと' do

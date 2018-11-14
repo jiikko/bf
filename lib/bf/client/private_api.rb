@@ -28,15 +28,20 @@ module BF
         @timestamp ||= Time.current.to_i.to_s
       end
 
-      def http_method
-        :POST
-      end
-
       def uri
         @uri ||= URI.parse(END_POINT)
       end
 
       def run(path: , http_class: , query: nil, timeout: 120)
+        http_method =
+          case
+          when http_class == Net::HTTP::Post
+            :POST
+          when http_class == Net::HTTP::Get
+            :GET
+          else
+            raise 'unknown http class'
+          end
         default_body = {
           product_code: BTC_FX_PRODUCT_CODE,
           child_order_type: 'LIMIT',
@@ -110,6 +115,22 @@ module BF
       end
     end
 
+    class GetPreorderListRequest < BaseRequest
+      def run
+        query = [
+          "product_code=#{BTC_FX_PRODUCT_CODE}",
+          "child_order_state=ACTIVE",
+        ].join('&')
+        response = super(path: '/v1/me/getchildorders',
+                         http_class: Net::HTTP::Get,
+                         query: query,
+                         timeout: 2)
+        response.map do |preorder|
+          preorder.slice('child_order_acceptance_id', 'side', 'price', 'size')
+        end
+      end
+    end
+
     class GetOrderRequest < BaseRequest
       def run(order_acceptance_id: )
         order_query = "child_order_acceptance_id=#{order_acceptance_id}"
@@ -117,17 +138,9 @@ module BF
                          http_class: Net::HTTP::Get,
                          query: "product_code=#{BTC_FX_PRODUCT_CODE}&#{order_query}",
                          timeout: 2)
-        if response.present?
-          response.map do |order|
-            order.slice('child_order_id', 'child_order_acceptance_id', 'exec_date', 'id', 'price', 'size')
-          end
-        else
-          []
+        response.map do |order|
+          order.slice('child_order_id', 'child_order_acceptance_id', 'exec_date', 'id', 'price', 'size')
         end
-      end
-
-      def http_method
-        :GET
       end
     end
 
@@ -148,10 +161,6 @@ module BF
             }
           end
         end
-      end
-
-      def http_method
-        :GET
       end
     end
   end

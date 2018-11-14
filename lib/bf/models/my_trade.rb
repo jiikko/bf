@@ -165,6 +165,26 @@ module BF
       end
     end
 
+    # スワップ手数料を回避する時にorder_idが変わった時に注文IDの再紐付けを行う
+    def resync!
+      preorders = api_client.preorders
+      found_preorders =
+        preorders.select do |preorder|
+          preorder['size'] == size &&
+            preorder['price'] == price &&
+            preorder['side'] == kind.upcase
+        end
+      case found_preorders.size
+      when 0
+        Rails.logger.info('注文待ちから注文がヒットしませんでした')
+      when 1
+        found_preorder = found_preorders.first
+        update!(order_acceptance_id: found_preorder['child_order_acceptance_id'])
+      else
+        Rails.logger.info('注文待ちから複数の注文がヒットしました。何もしません')
+      end
+    end
+
     def cancel_order_with_timeout!
       api_client.cancel_order(self.order_acceptance_id)
       timeout!

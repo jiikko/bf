@@ -32,6 +32,12 @@ module BF
       end
     end
 
+    def preorders(price: , size: )
+      retry_with(from: :preorders) do
+        GetPreorderListRequest.new.run
+      end
+    end
+
     def get_state
       retry_with(from: :get_state) do
         PublicApi.new.get_public_api("/v1/getboardstate", BTC_FX_PRODUCT_CODE) || {}
