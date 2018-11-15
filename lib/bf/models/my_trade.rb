@@ -176,12 +176,12 @@ module BF
         end
       case found_preorders.size
       when 0
-        Rails.logger.info('注文待ちから注文がヒットしませんでした')
+        BF.logger.info('注文待ちから注文がヒットしませんでした')
       when 1
         found_preorder = found_preorders.first
         update!(order_acceptance_id: found_preorder['child_order_acceptance_id'])
       else
-        Rails.logger.info('注文待ちから複数の注文がヒットしました。何もしません')
+        BF.logger.info('注文待ちから複数の注文がヒットしました。何もしません')
       end
     end
 
