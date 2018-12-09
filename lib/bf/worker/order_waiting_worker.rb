@@ -1,3 +1,5 @@
+require "bf/worker/base_worker"
+
 module BF
   class OrderWaitingWorker < BaseWorker
     def perform(sell_trade_id)
