@@ -1,3 +1,5 @@
+require "bf/scalping/base"
+
 module BF
   class Scalping
     class Basic < Base
